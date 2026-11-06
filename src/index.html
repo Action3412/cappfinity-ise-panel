@@ -269,6 +269,10 @@ h3{font-size:1.6rem;font-weight:600;letter-spacing:-.01em}
 .dims .outcome p{font-size:1.5rem}
 .dim{background:#fff;border:1px solid var(--line);border-radius:1.3rem;padding:1.5rem;display:flex;flex-direction:column;gap:.9rem;transition:opacity .4s}
 .dim.off{opacity:.3;pointer-events:none}
+.opt.on{animation:dialin .35s var(--ease)}
+@keyframes dialin{from{transform:scale(.97);opacity:.6}to{transform:none;opacity:1}}
+.outcome{transition:background .5s,transform .4s}
+.outcome:not(.wait){animation:pop .5s var(--ease)}
 .dim .dh{display:flex;align-items:center;gap:.9rem}
 .dim .dh .ic{width:2.8rem;height:2.8rem;border-radius:50%;background:var(--g-full);display:grid;place-items:center;color:#fff;font-weight:800;font-size:1.1rem}
 .dim .dh b{font-size:1.5rem;letter-spacing:-.01em}
@@ -654,10 +658,10 @@ const SECTIONS = [
   render(step){ const el=h("div","chartwrap"); el.id="datawrap"; setTimeout(()=>drawData(step),30); return el; },
   onStep(el,step){ drawData(step); }
 },
-{ id:"sd", label:"Skills Discovery", steps:7, poll:"decide",
-  notes:["Build 0: the three dimensions. Click the dials – Performance, then Energy, then Opportunity – and the outcome resolves.","Build 1: the four outcomes. Builds 2–3: two demo-cohort patterns.","Build 4: the vote (keys 1/2 – first pattern; 3/4 – second). Build 5: key message + warm-up callback."],
-  render(step){ const el=h("div","sd"); el.id="sdwrap"; setTimeout(()=>drawSD(step),30); return el; },
-  onStep(el,step){ drawSD(step); }
+{ id:"sd", label:"Skills Discovery", steps:11, poll:"decide",
+  notes:["Build 0: the three dimensions, empty. Each press of → plays one combination dial by dial: realised strength, unrealised strength, learned skill, weakness (builds 1–4). You can still click the dials by hand.","Build 5: the four outcomes. Builds 6–7: two demo-cohort patterns.","Build 8: the vote (keys 1/2 – first pattern; 3/4 – second). Build 9: key message + warm-up callback. Build 10: hand to the panel."],
+  render(step){ const el=h("div","sd"); el.id="sdwrap"; setTimeout(()=>drawSD(step,true),30); return el; },
+  onStep(el,step){ drawSD(step,true); }
 },
 { id:"panel", label:"The panel", steps:3+JOHN_QS.length+HELEN_QS.length+BOTH_QS.length, quiet:true,
   notes:["John first (7 mins), then Helen (7 mins), then the two linked questions.","John's 'What am I missing?' – press T for the two-minute clock.","Helen: 'You're now speaking on behalf of every UK organisation. No pressure!'"],
@@ -809,35 +813,47 @@ const OUT={
   o:{k:"Learned skill",sub:"Skills you've learned but may not enjoy",act:"Use when needed",col:"var(--sd-orange)",sig:["Perform well","De-energising","Variable opportunity"],do:"Keep it in reserve. Lean on it when it matters, not all day."},
   r:{k:"Weakness",sub:"Skills you find hard and don't enjoy",act:"Use less",col:"var(--sd-red)",sig:["Perform poorly","De-energising","Variable opportunity"],do:"Only train it if the skill is business-critical. Otherwise, design around it."},
 };
-function resolveDial(){ const {p,e,u}=S.dial; if(p==="low") return "r"; if(p==="high"&&e==="low") return "o"; if(p==="high"&&e==="high"&&u==="high") return "g"; if(p==="high"&&e==="high"&&u==="low") return "l"; return null; }
-function drawSD(step){
+function resolveDial(){ const {p,e,u}=S.dial; if(!p||!e||!u) return null; if(p==="low") return "r"; if(e==="low") return "o"; return u==="high" ? "g" : "l"; }
+// The four combinations the arrow key plays through, in order
+const DIAL_COMBOS=[{p:"high",e:"high",u:"high"},{p:"high",e:"high",u:"low"},{p:"high",e:"low",u:"high"},{p:"low",e:"low",u:"low"}];
+let dialTimers=[];
+function playDial(combo){ dialTimers.forEach(clearTimeout); dialTimers=[]; S.dial={p:null,e:null,u:null}; renderDials();
+  dialTimers.push(setTimeout(()=>{S.dial.p=combo.p; renderDials();},350));
+  dialTimers.push(setTimeout(()=>{S.dial.e=combo.e; renderDials();},1150));
+  dialTimers.push(setTimeout(()=>{S.dial.u=combo.u; renderDials();},1950)); }
+function renderDials(){
+  const el=$("#sdwrap"); if(!el) return; let d=el.querySelector(".dims"); if(!d){ d=h("div","dims"); el.appendChild(d); } d.innerHTML="";
+  const dim=(key,ic,name,sub,opts)=>{ const w=h("div","dim"); w.innerHTML=`<div class="dh"><div class="ic">${ic}</div><div><b>${name}</b><small>${sub}</small></div></div>`; opts.forEach(([val,lab])=>{ const b=h("button","opt"+(S.dial[key]===val?" on":""),`<span>${lab}</span><span>${S.dial[key]===val?"●":""}</span>`); b.onclick=()=>{ dialTimers.forEach(clearTimeout); S.dial[key]=val; renderDials(); }; w.appendChild(b); }); return w; };
+  d.appendChild(dim("p","P","Performance","How well do they do it?",[["high","Perform well"],["low","Perform poorly"]]));
+  d.appendChild(dim("e","E","Energy","Does it energise them?",[["high","Energising"],["low","De-energising"]]));
+  d.appendChild(dim("u","O","Opportunity","How much chance do they get to use it?",[["high","Plenty of opportunity"],["low","Little opportunity"]]));
+  const r=resolveDial(); const o=h("div","outcome"+(r?"":" wait"));
+  if(r){ const O=OUT[r]; o.style.background=O.col; o.innerHTML=`<div><div class="k">Outcome</div><h3>${O.k}</h3><p>${O.sub}</p><div class="do">${O.do}</div></div><span class="act">${O.act}</span>`; }
+  else { const set=[S.dial.p,S.dial.e,S.dial.u].filter(Boolean).length; o.innerHTML=`<div><div class="k">Outcome</div><h3>${set?"…":"?"}</h3><p>${set?"Resolving…":"Press → to play each combination, or click the dials."}</p></div><span class="act" style="opacity:.5">${set?set+" of 3":"Waiting"}</span>`; }
+  d.appendChild(o);
+}
+function drawSD(step,auto){
   const el=$("#sdwrap"); if(!el) return; el.innerHTML="";
-  if(step===0){
-    el.innerHTML=`<div><div class="kicker">How Skills Discovery works</div><h2>80 behavioural skills. Three dimensions. Four outcomes.</h2></div>`;
-    const d=h("div","dims");
-    const dim=(key,ic,name,sub,opts,enabled)=>{ const w=h("div","dim"+(enabled?"":" off")); w.innerHTML=`<div class="dh"><div class="ic">${ic}</div><div><b>${name}</b><small>${sub}</small></div></div>`; opts.forEach(([val,lab,ghost])=>{ const b=h("button","opt"+(S.dial[key]===val?" on":"")+(ghost?" ghost":""),`<span>${lab}</span><span>${S.dial[key]===val?"●":""}</span>`); b.onclick=()=>{ S.dial[key]=val; if(key==="p"){S.dial.e=null;S.dial.u=null; if(val==="low"){S.dial.e="low";}} if(key==="e"){S.dial.u=null;} drawSD(0); }; w.appendChild(b); }); return w; };
-    d.appendChild(dim("p","P","Performance","How well do they do it?",[["high","Perform well"],["low","Perform poorly"]],true));
-    d.appendChild(dim("e","E","Energy","Does it energise them?",[["high","Energising"],["low","De-energising"]],S.dial.p==="high"));
-    d.appendChild(dim("u","O","Opportunity","How much chance do they get to use it?",[["high","Plenty of opportunity"],["low","Little opportunity"]],S.dial.p==="high"&&S.dial.e==="high"));
-    const r=resolveDial(); const o=h("div","outcome"+(r?"":" wait"));
-    if(r){ const O=OUT[r]; o.style.background=O.col; o.innerHTML=`<div><div class="k">Outcome</div><h3>${O.k}</h3><p>${O.sub}</p><div class="do">${O.do}</div></div><span class="act">${O.act}</span>`; }
-    else o.innerHTML=`<div><div class="k">Outcome</div><h3>?</h3><p>Pick a reading on each dimension and watch it resolve.</p></div><span class="act" style="opacity:.5">Waiting</span>`;
-    d.appendChild(o); el.appendChild(d);
-  } else if(step===1){
+  if(step<=4){
+    const names=["","Realised strength","Unrealised strength","Learned skill","Weakness"];
+    el.innerHTML=`<div><div class="kicker">How Skills Discovery works${step?` · ${step} of 4 · ${names[step]}`:""}</div><h2>80 behavioural skills. Three dimensions. Four outcomes.</h2></div>`;
+    if(auto){ if(step===0){ dialTimers.forEach(clearTimeout); S.dial={p:null,e:null,u:null}; renderDials(); } else playDial(DIAL_COMBOS[step-1]); }
+    else renderDials();
+  } else if(step===5){
     el.innerHTML=`<div><div class="kicker">The data Skills Discovery gives</div><h2>Four outcomes – and four very different actions.</h2></div>`;
     const g=h("div","four");
     [["g","g"],["l","l"],["o","o"],["r","r"]].forEach(([k])=>{ const O=OUT[k]; g.appendChild(h("div","oc "+k,`<div class="hd"><b>${O.k}</b><span>${O.sub}</span></div><div class="band">${O.act}</div><div class="sig">${O.sig.map(s=>`<span>${s}</span>`).join("")}</div><div class="do">${O.do}</div>`)); });
     el.appendChild(g);
-  } else if(step===2||step===3){
-    const P=PATTERNS[step-2];
+  } else if(step===6||step===7){
+    const P=PATTERNS[step-6];
     el.innerHTML=`<div><div class="kicker">Demo cohort · 14 new hires · illustrative data</div><h2>Two patterns from one cohort</h2></div>`;
     const w=h("div","pattern"); const heat=h("div","heat");
     heat.appendChild(h("div")); for(let i=1;i<=14;i++) heat.appendChild(h("div","ch","P"+i));
     COHORT_SKILLS.forEach((sk,ri)=>{ const hi=sk===P.skill; heat.appendChild(h("div","rl"+(hi?" h":""),sk)); const row=cohortRow(sk,P); row.forEach(c=>{ const d=h("div","c "+c); if(hi) d.classList.add("hot"); else d.style.opacity=".28"; if(hi){d.style.boxShadow="0 0 0 2px #fff,0 0 0 3px "+OUT[P.kind].col;} heat.appendChild(d);}); });
     const left=h("div"); left.appendChild(heat); left.appendChild(h("div","pkey",`<span><i style="background:var(--sd-green)"></i>Realised strength</span><span><i style="background:var(--sd-lime)"></i>Unrealised strength</span><span><i style="background:var(--sd-orange)"></i>Learned skill</span><span><i style="background:var(--sd-red)"></i>Weakness</span>`));
-    const right=h("div","pside",`<div class="kicker" style="color:${OUT[P.kind].col}">Pattern ${step-1} · ${P.skill}</div><h3>${P.title}</h3><p>${P.text}</p><div class="stat"><div><b>${P.stat[0]}</b><span>${P.stat[1]}</span></div></div>`);
+    const right=h("div","pside",`<div class="kicker" style="color:${OUT[P.kind].col}">Pattern ${step-5} · ${P.skill}</div><h3>${P.title}</h3><p>${P.text}</p><div class="stat"><div><b>${P.stat[0]}</b><span>${P.stat[1]}</span></div></div>`);
     w.append(left,right); el.appendChild(w);
-  } else if(step===4){
+  } else if(step===8){
     el.innerHTML=`<div class="sdhead"><div><div class="kicker g">You decide</div><h2>Development need – or opportunity gap? What would you do?</h2></div><div class="qrslot mini"></div></div>`;
     el.querySelector(".qrslot").appendChild(qrCard());
     const g=h("div","decide");
@@ -845,10 +861,10 @@ function drawSD(step){
     PATTERNS.forEach((P,pi)=>{ const v=DC[pi], t=v[0]+v[1]; const card=h("div","card",""); card.style.display="grid"; card.style.gridTemplateRows="auto 1fr"; card.style.gap="1.2rem"; card.style.padding="1.6rem";
       card.innerHTML=`<div><span class="kicker" style="color:${OUT[P.kind].col};margin:0">Pattern ${pi+1} · ${P.skill}</span><div style="font-size:1.15rem;color:var(--ink2);margin-top:.3rem">${P.title}</div></div>`;
       const row=h("div"); row.style.display="grid"; row.style.gridTemplateColumns="1fr 1fr"; row.style.gap="1rem";
-      [["a","Development need","Train it.",pi*2+1],["b","Opportunity gap","Change the work.",pi*2+2]].forEach(([c,t1,t2,key],oi)=>{ const b=h("button","dc "+c,`<div><span class="k">${key}</span><h3>${t1}</h3><p>${t2}</p></div><div class="big">${pct(v[oi],t)}%<small>${v[oi]} ${v[oi]===1?'vote':'votes'}</small></div><div class="fillbar"><i style="width:${pct(v[oi],t)}%"></i></div>`); b.onclick=()=>{S.decide[pi][oi]++;S.decideHist[pi].push(oi);drawSD(4);}; b.querySelector(".big").appendChild(stepper(v[oi],d=>{ if(d<0&&v[oi]<=0) return; S.decide[pi][oi]+=d; if(d>0) S.decideHist[pi].push(oi); drawSD(4); })); row.appendChild(b); });
+      [["a","Development need","Train it.",pi*2+1],["b","Opportunity gap","Change the work.",pi*2+2]].forEach(([c,t1,t2,key],oi)=>{ const b=h("button","dc "+c,`<div><span class="k">${key}</span><h3>${t1}</h3><p>${t2}</p></div><div class="big">${pct(v[oi],t)}%<small>${v[oi]} ${v[oi]===1?'vote':'votes'}</small></div><div class="fillbar"><i style="width:${pct(v[oi],t)}%"></i></div>`); b.onclick=()=>{S.decide[pi][oi]++;S.decideHist[pi].push(oi);drawSD(8);}; b.querySelector(".big").appendChild(stepper(v[oi],d=>{ if(d<0&&v[oi]<=0) return; S.decide[pi][oi]+=d; if(d>0) S.decideHist[pi].push(oi); drawSD(8); })); row.appendChild(b); });
       card.appendChild(row); g.appendChild(card); });
     el.appendChild(g);
-  } else if(step===5){
+  } else if(step===9){
     el.innerHTML=`<div><div class="kicker">The key message</div><h2>Not every gap is a training gap.</h2></div>`;
     const g=h("div","msg");
     g.appendChild(h("div","card",`<div class="kicker" style="color:var(--sd-lime)">Unrealised strengths</div>Point to high performance that's <b>lacking opportunity</b>. The fix is usually the work, not a course.`));
@@ -917,11 +933,11 @@ function drawClose(step){
 
 /* ---------- live polling (Supabase) ---------- */
 let sb=null, countsTimer=null, lastQ=null;
-function questionFor(sec,step){ if(sec.id==="warm") return "warm"; if(sec.id==="top5"&&step===0) return "top5"; if(sec.id==="sd"&&step===4) return "decide"; if(sec.id==="end") return "closed"; return "idle"; }
+function questionFor(sec,step){ if(sec.id==="warm") return "warm"; if(sec.id==="top5"&&step===0) return "top5"; if(sec.id==="sd"&&step===8) return "decide"; if(sec.id==="end") return "closed"; return "idle"; }
 async function syncQuestion(){ if(!sb) return; const q=questionFor(SECTIONS[S.i],S.step); if(q===lastQ) return; lastQ=q; try{ await sb.rpc("set_question",{q,secret:LIVE.secret}); }catch(e){} }
 async function fetchCounts(){ if(!sb) return; try{ const {data,error}=await sb.rpc("vote_counts"); if(error) throw error; const live={warm:{},top5:{},decide1:{},decide2:{}}; (data||[]).forEach(r=>{ if(live[r.question]) live[r.question][r.option]=+r.n; }); S.live=live; S.liveOn=true; redrawIfPoll(); setLiveBadge(true); }catch(e){ setLiveBadge(false); } }
 function scheduleCounts(){ clearTimeout(countsTimer); countsTimer=setTimeout(fetchCounts,150); }
-function redrawIfPoll(){ const id=SECTIONS[S.i].id; if(id==="warm"||id==="top5"||(id==="sd"&&(S.step===4||S.step===5))||id==="data") redraw(); }
+function redrawIfPoll(){ const id=SECTIONS[S.i].id; if(id==="warm"||id==="top5"||(id==="sd"&&(S.step===8||S.step===9))||id==="data") redraw(); }
 function setLiveBadge(on){ const b=$("#livebadge"); if(!b) return; b.className="livebadge"+(on?" on":""); b.textContent=on?"Live voting on":"Live voting offline"; }
 async function liveReset(q){ if(!sb) return; try{ await sb.rpc("reset_votes",{q,secret:LIVE.secret}); S.live={warm:{},top5:{},decide1:{},decide2:{}}; await fetchCounts(); }catch(e){} }
 function qrCard(){ const d=h("div","qrcard",`<button class="qrbig" title="Show full screen">&#x26F6;</button><div class="qrk">Scan to vote</div>${QRVOTE_SVG}<div class="qru">${LIVE.voteShort}</div>`); d.querySelector(".qrbig").onclick=e=>{e.stopPropagation(); showQR();}; return d; }
@@ -1008,12 +1024,12 @@ document.addEventListener("keydown",e=>{
   else if(/^[1-4]$/.test(k)){
     const n=+k-1;
     if(sec.id==="warm"){ S.warm[n]++; S.warmHist.push(n); flash(WARMUP.options[n]+" +1"); redraw(); }
-    else if(sec.id==="sd"&&S.step===4){ const pi=n<2?0:1, oi=n%2; S.decide[pi][oi]++; S.decideHist[pi].push(oi); flash((pi?PATTERNS[1].skill:PATTERNS[0].skill)+": "+(oi?"opportunity gap":"development need")+" +1"); redraw(); }
+    else if(sec.id==="sd"&&S.step===8){ const pi=n<2?0:1, oi=n%2; S.decide[pi][oi]++; S.decideHist[pi].push(oi); flash((pi?PATTERNS[1].skill:PATTERNS[0].skill)+": "+(oi?"opportunity gap":"development need")+" +1"); redraw(); }
   }
   else if(k==="Backspace"){
     if(sec.id==="warm"&&S.warmHist.length){ S.warm[S.warmHist.pop()]--; flash("undo"); redraw(); }
     else if(sec.id==="top5"&&S.top5Hist.length){ S.top5[S.top5Hist.pop()]--; flash("undo"); redraw(); }
-    else if(sec.id==="sd"&&S.step===4){ for(const pi of [1,0]) if(S.decideHist[pi].length){ S.decide[pi][S.decideHist[pi].pop()]--; flash("undo"); redraw(); break; } }
+    else if(sec.id==="sd"&&S.step===8){ for(const pi of [1,0]) if(S.decideHist[pi].length){ S.decide[pi][S.decideHist[pi].pop()]--; flash("undo"); redraw(); break; } }
   }
 });
 $("#hosttab").onclick=()=>$("#host").classList.toggle("open");
