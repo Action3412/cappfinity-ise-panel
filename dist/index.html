@@ -356,7 +356,7 @@ h3{font-size:1.6rem;font-weight:600;letter-spacing:-.01em}
 .pair .pcard .name{font-size:1.8rem}
 
 /* ---- conclusion ---- */
-.conc{display:grid;grid-template-rows:auto auto;gap:3rem;height:100%;align-content:center}
+.conc{display:grid;height:100%;align-content:center}
 .conc h2{font-size:3rem;max-width:70rem}
 .tks{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;align-content:center}
 .tk{padding:2.2rem 2.4rem;border-radius:1.4rem;background:#fff;border:1px solid var(--line);font-size:1.9rem;line-height:1.25;font-weight:600;letter-spacing:-.015em;display:flex;gap:1.4rem;align-items:flex-start}
@@ -810,17 +810,15 @@ const SECTIONS = [
   render(step){ const el=h("div","panel"); el.id="panelwrap"; setTimeout(()=>drawPanel(step),30); return el; },
   onStep(el,step){ drawPanel(step); }
 },
-{ id:"conc", label:"The room's conclusion", steps:5,
-  notes:["Ask the room: what else should we have said?","Then build the four questions to take back, one at a time."],
+{ id:"conc", label:"Over to the audience", steps:1, quiet:true,
+  notes:["Open the floor. Take two or three questions for the panel."],
   render(step){
     const el=h("div","conc");
-    el.innerHTML=`<div><div class="kicker g">Before we close</div><h2>When you think about getting ready to use skills in recruitment and development – what else should we have said?</h2></div>`;
-    const g=h("div","tks");
-    TAKEAWAYS.forEach((t,i)=>{const d=h("div","tk",`<span class="n">${i+1}</span><span>${t}</span>`); d.dataset.step=i+1; g.appendChild(d);});
-    el.appendChild(g); return el;
+    el.innerHTML=`<div style="align-self:center"><div class="kicker g">Over to you</div><h1 style="font-size:4.6rem;max-width:80rem">Audience, when you think about using skills intelligence, is there anything you would like to ask our panel?</h1></div>`;
+    return el;
   }},
-{ id:"close", label:"Close", steps:2,
-  notes:["Energiser: panellists pick a side – click to light it up.","Build 1: 'Do the next right thing.' QR for Skills Discovery access. Thank the panel and the room."],
+{ id:"close", label:"Practical takeaways", steps:5,
+  notes:["Build the four takeaways one at a time (→).","Last build: 'Do the next right thing.' QR for Skills Discovery access. Thank the panel and the room."],
   render(step){ const el=h("div"); el.id="closewrap"; el.style.height="100%"; setTimeout(()=>drawClose(step),30); return el; },
   onStep(el,step){ drawClose(step); }
 },
@@ -1061,10 +1059,11 @@ function drawPanel(step){
 /* ---------- close ---------- */
 function drawClose(step){
   const el=$("#closewrap"); if(!el) return; el.innerHTML="";
-  if(step===0){
-    const w=h("div","energ"); w.innerHTML=`<div><div class="kicker g">Energiser</div><h2>Quick-fire. Panel – pick a side.</h2></div>`;
-    const g=h("div","vs");
-    ENERGISERS.forEach((e,i)=>{ const r=h("div","vsrow",`<div class="t">${e.t}</div>`); ["a","b"].forEach((k,ki)=>{ const b=h("button","side"+(S.picks[i]===k?" on":""),e[k]); b.onclick=()=>{S.picks[i]=S.picks[i]===k?null:k;drawClose(0);}; r.appendChild(b); if(ki===0) r.appendChild(h("div","or","or")); }); g.appendChild(r); });
+  if(step<=3){
+    const w=h("div","conc"); w.style.gridTemplateRows="auto auto"; w.style.gap="3rem";
+    w.innerHTML=`<div><div class="kicker g">Practical takeaways</div><h2>Four questions to take back with you.</h2></div>`;
+    const g=h("div","tks");
+    TAKEAWAYS.forEach((t,i)=>{const d=h("div","tk"+(i<=step?" in":""),`<span class="n">${i+1}</span><span>${t}</span>`); d.style.opacity=i<=step?"1":"0"; d.style.transform=i<=step?"none":"translateY(1rem)"; d.style.transition="all .5s var(--ease)"; g.appendChild(d);});
     w.appendChild(g); el.appendChild(w);
   } else {
     const w=h("div","close"); w.innerHTML=`<div><div class="kicker g">Thank you</div><h1>Do the next<br><span class="grad">right thing.</span></h1><p class="lead">The biggest thing to take away: strong skills intelligence should lead to tangible action. Start with one.</p><div class="thanks">Thank you to John, Helen – and to you, for being brave with what you shared.</div></div>
