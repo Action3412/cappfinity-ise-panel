@@ -421,6 +421,18 @@ body.end .top,body.end .foot{opacity:0;transition:opacity .6s}
 .resetmenu button:hover{background:var(--paper)}
 .resetmenu button.danger{color:#c8102e}
 .resetmenu small{display:block;font-size:.8rem;color:var(--ink3);font-weight:500;margin-top:.15rem}
+.qrcard{position:relative}
+.qrbig{position:absolute;top:.5rem;right:.5rem;width:1.9rem;height:1.9rem;border-radius:.5rem;display:grid;place-items:center;font-size:1rem;color:var(--ink3);background:var(--paper);border:1px solid var(--line)}
+.qrbig:hover{background:var(--charcoal);color:#fff;border-color:transparent}
+.qrslot.mini .qrbig{top:-.5rem;right:-.5rem}
+.qroverlay{position:fixed;inset:0;z-index:80;background:rgba(251,251,253,.96);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.qroverlay.on{opacity:1;pointer-events:auto;cursor:pointer}
+.qrbox{text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.2rem;transform:scale(.96);transition:transform .3s}
+.qroverlay.on .qrbox{transform:none}
+.qrbox svg{width:min(60vh,60vw);height:min(60vh,60vw);display:block;background:#fff;padding:1.5rem;border-radius:1.6rem;box-shadow:0 2rem 6rem rgba(38,38,38,.12)}
+.qrbox .qrk{font-size:1.1rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;background:var(--g-full);-webkit-background-clip:text;background-clip:text;color:transparent}
+.qrbox .qru{font-size:2.2rem;font-weight:700;letter-spacing:-.01em}
+.qrbox .qrh{font-size:.95rem;color:var(--ink3)}
 .qrcard{display:inline-flex;flex-direction:column;align-items:center;gap:.4rem;padding:1rem 1.2rem;background:#fff;border:1px solid var(--line);border-radius:1.2rem;box-shadow:0 .8rem 2.4rem rgba(38,38,38,.06);margin-top:2rem}
 .qrcard svg{width:11rem;height:11rem;display:block}
 .qrcard .qrk{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;background:var(--g-full);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -462,7 +474,7 @@ body.end .top,body.end .foot{opacity:0;transition:opacity .6s}
   <div class="keys">
     <kbd>→</kbd> / <kbd>Space</kbd> next build · <kbd>←</kbd> back · <kbd>PgDn</kbd>/<kbd>PgUp</kbd> next/prev section<br>
     <kbd>1</kbd>–<kbd>4</kbd> add a vote on poll screens · <kbd>Backspace</kbd> undo last vote<br>
-    <kbd>T</kbd> start/stop timer · <kbd>R</kbd> reset timer · <kbd>F</kbd> fullscreen · <kbd>H</kbd> this panel
+    <kbd>T</kbd> start/stop timer · <kbd>R</kbd> reset timer · <kbd>F</kbd> fullscreen · <kbd>Q</kbd> big QR code · <kbd>H</kbd> this panel
   </div>
 </aside>
 <div class="resetmenu" id="resetmenu">
@@ -912,7 +924,9 @@ function scheduleCounts(){ clearTimeout(countsTimer); countsTimer=setTimeout(fet
 function redrawIfPoll(){ const id=SECTIONS[S.i].id; if(id==="warm"||id==="top5"||(id==="sd"&&(S.step===4||S.step===5))||id==="data") redraw(); }
 function setLiveBadge(on){ const b=$("#livebadge"); if(!b) return; b.className="livebadge"+(on?" on":""); b.textContent=on?"Live voting on":"Live voting offline"; }
 async function liveReset(q){ if(!sb) return; try{ await sb.rpc("reset_votes",{q,secret:LIVE.secret}); S.live={warm:{},top5:{},decide1:{},decide2:{}}; await fetchCounts(); }catch(e){} }
-function qrCard(){ const d=h("div","qrcard",`<div class="qrk">Scan to vote</div>${QRVOTE_SVG}<div class="qru">${LIVE.voteShort}</div>`); return d; }
+function qrCard(){ const d=h("div","qrcard",`<button class="qrbig" title="Show full screen">&#x26F6;</button><div class="qrk">Scan to vote</div>${QRVOTE_SVG}<div class="qru">${LIVE.voteShort}</div>`); d.querySelector(".qrbig").onclick=e=>{e.stopPropagation(); showQR();}; return d; }
+function showQR(){ let o=$("#qroverlay"); if(!o){ o=h("div","qroverlay",`<div class="qrbox"><div class="qrk">Scan to vote</div>${QRVOTE_SVG}<div class="qru">${LIVE.voteShort}</div><div class="qrh">Click anywhere or press Esc to go back</div></div>`); o.id="qroverlay"; o.onclick=hideQR; document.body.appendChild(o); } requestAnimationFrame(()=>o.classList.add("on")); }
+function hideQR(){ const o=$("#qroverlay"); if(o) o.classList.remove("on"); }
 (function liveBoot(){
   if(!window.supabase||!LIVE.url) return;
   try{
@@ -979,6 +993,8 @@ let flashId; function flash(t){ const f=$("#flash"); f.textContent=t; f.classLis
 document.addEventListener("keydown",e=>{
   if(e.target.tagName==="INPUT") return;
   const k=e.key; const sec=SECTIONS[S.i];
+  if(k==="Escape"){ hideQR(); return; }
+  if($("#qroverlay")&&$("#qroverlay").classList.contains("on")){ if(k==="ArrowRight"||k===" "||k==="Enter"||k==="ArrowLeft"){ e.preventDefault(); hideQR(); return; } }
   if(k==="ArrowRight"||k===" "||k==="Enter"){ e.preventDefault(); next(); }
   else if(k==="ArrowLeft"){ e.preventDefault(); prev(); }
   else if(k==="PageDown"||k==="ArrowDown"){ e.preventDefault(); go(S.i+1); }
@@ -986,6 +1002,7 @@ document.addEventListener("keydown",e=>{
   else if(k==="Home"){ go(0); }
   else if(k.toLowerCase()==="h"){ $("#host").classList.toggle("open"); }
   else if(k.toLowerCase()==="f"){ fullscreen(); }
+  else if(k.toLowerCase()==="q"){ showQR(); }
   else if(k.toLowerCase()==="t"){ toggleTimer(); drawHost(); }
   else if(k.toLowerCase()==="r"){ resetTimer(); }
   else if(/^[1-4]$/.test(k)){
