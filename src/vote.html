@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Vote · Cappfinity at ISE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#262626">
+<style>
+:root{--charcoal:#262626;--violet:#9275FA;--blue:#487BFA;--gold:#FDB601;--pink:#FB6CF5;--ink:#262626;--ink2:#5a5a5a;--ink3:#8a8a8a;--line:#e6e6ea;--paper:#fbfbfd;
+--g-full:linear-gradient(45deg,#487BFA,#9275FA,#FB6CF5,#FDB601);--g-energy:linear-gradient(135deg,#FDB601,#FB6CF5);--sd-green:#0e9a4e;--sd-lime:#b4d12a;--sd-orange:#f58a1f;--sd-red:#e8334a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--paper);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;min-height:100%}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.18}
+.blob.a{width:60vw;height:60vw;left:-20vw;top:-20vw;background:var(--violet)}
+.blob.b{width:50vw;height:50vw;right:-15vw;bottom:-10vw;background:var(--pink)}
+.wrap{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:20px 18px 40px;min-height:100vh;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.top img{height:18px}
+.status{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--ink3);display:flex;align-items:center;gap:6px}
+.status i{width:8px;height:8px;border-radius:50%;background:#ccc;display:block}
+.status.on i{background:var(--sd-green)}
+.kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;background:var(--g-full);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:8px}
+h1{font-size:26px;line-height:1.15;letter-spacing:-.02em;font-weight:700;margin-bottom:6px}
+p.sub{font-size:15px;color:var(--ink2);line-height:1.4;margin-bottom:18px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;padding:16px 16px;border-radius:14px;background:#fff;border:1.5px solid var(--line);text-align:left;font-size:17px;font-weight:600;line-height:1.2;transition:all .15s;box-shadow:0 4px 14px rgba(38,38,38,.04)}
+.opt .k{flex:none;width:30px;height:30px;border-radius:9px;background:var(--charcoal);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt small{display:block;font-size:13px;color:var(--ink3);font-weight:500;margin-top:3px}
+.opt.on{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
+.opt.on small{color:#c8c8d2}
+.opt.on .k{background:var(--g-energy);color:#262626}
+.opt:active{transform:scale(.985)}
+.opt.dis{opacity:.4}
+.done{margin-top:16px;padding:14px 16px;border-radius:12px;background:rgba(14,154,78,.1);color:#0b7a3e;font-size:14px;font-weight:600;display:none}
+.done.on{display:block}
+.idle{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:30px 0}
+.idle .ring{width:84px;height:84px;border-radius:50%;background:var(--g-full);margin:0 auto 22px;display:grid;place-items:center;animation:spin 6s linear infinite}
+.idle .ring div{width:66px;height:66px;border-radius:50%;background:var(--paper)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.idle h1{font-size:24px}
+.count{font-size:13px;color:var(--ink3);font-weight:600;margin:8px 0 14px}
+.count b{color:var(--ink)}
+.group{margin-bottom:22px;padding:16px;background:#fff;border:1px solid var(--line);border-radius:16px}
+.group .gk{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.group h2{font-size:18px;letter-spacing:-.01em;margin-bottom:12px}
+.foot{margin-top:auto;padding-top:26px;font-size:12px;color:var(--ink3);text-align:center;line-height:1.5}
+.err{display:none;margin-top:12px;padding:12px 14px;border-radius:10px;background:rgba(232,51,74,.1);color:#b3122b;font-size:13px;font-weight:600}
+.err.on{display:block}
+</style>
+</head>
+<body>
+<div class="bg"><div class="blob a"></div><div class="blob b"></div></div>
+<div class="wrap">
+  <div class="top"><img id="wm" alt="Cappfinity"><div class="status" id="status"><i></i><span>connecting</span></div></div>
+  <div id="view"></div>
+  <div class="err" id="err"></div>
+  <div class="foot">Cappfinity at the ISE Early Talent Intelligence Summit<br>Your answers are anonymous. One vote per phone per question.</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+__POLLCFG__
+const WORDMARK = "data:image/png;base64,__WORDMARK__";
+document.getElementById("wm").src = WORDMARK;
+
+const $=s=>document.querySelector(s);
+const view=$("#view"), status=$("#status"), err=$("#err");
+let dev = localStorage.getItem("ise-dev"); if(!dev){ dev = "d" + Math.random().toString(36).slice(2,10) + Date.now().toString(36); localStorage.setItem("ise-dev",dev); }
+const mine = JSON.parse(localStorage.getItem("ise-mine")||"{}"); // {warm:"1", top5:[...], decide1:"a", decide2:"b"}
+const saveMine=()=>localStorage.setItem("ise-mine",JSON.stringify(mine));
+let question = "idle", sb = null, busy=false;
+
+function setStatus(on,txt){ status.className="status"+(on?" on":""); status.lastElementChild.textContent=txt; }
+function showErr(t){ err.textContent=t; err.classList.add("on"); setTimeout(()=>err.classList.remove("on"),3000); }
+
+async function cast(q,opt){
+  if(!sb||busy) return null; busy=true;
+  try{ const {data,error}=await sb.rpc("cast_vote",{q,opt,dev}); if(error) throw error; return data; }
+  catch(e){ showErr("That didn't go through – try again."); return null; }
+  finally{ busy=false; }
+}
+
+function render(){
+  view.innerHTML="";
+  if(question==="warm"){
+    view.innerHTML=`<div class="kicker">Warm-up</div><h1>${WARMUP.q}</h1><p class="sub">Tap one. You can change your mind.</p><div class="opts" id="opts"></div><div class="done" id="done">Got it – your vote's on the screen.</div>`;
+    const o=$("#opts");
+    WARMUP.options.forEach((t,i)=>{ const b=document.createElement("button"); b.className="opt"+(mine.warm===String(i)?" on":""); b.innerHTML=`<span class="k">${i+1}</span><span>${t}</span>`; b.onclick=async()=>{ const r=await cast("warm",String(i)); if(r){ mine.warm=String(i); saveMine(); render(); $("#done").classList.add("on"); } }; o.appendChild(b); });
+    if(mine.warm!=null) $("#done").classList.add("on");
+  } else if(question==="top5"){
+    const sel = Array.isArray(mine.top5)?mine.top5:[];
+    view.innerHTML=`<div class="kicker">Table activity</div><h1>Your table's top 5 skills for 2027</h1><p class="sub">One phone per table. Pick five from the Work Ready Skills dictionary – tap again to remove.</p><div class="count"><b>${sel.length}</b> of 5 chosen</div><div class="opts" id="opts"></div>`;
+    const o=$("#opts");
+    WORK_READY.forEach(([k,d])=>{ const on=sel.includes(k); const b=document.createElement("button"); b.className="opt"+(on?" on":"")+(!on&&sel.length>=5?" dis":""); b.innerHTML=`<span class="k">${on?"✓":""}</span><span>${k}<small>${d}</small></span>`; b.onclick=async()=>{ if(!on&&sel.length>=5){ showErr("That's five already – remove one first."); return; } const r=await cast("top5",k); if(!r) return; if(r.status==="added") sel.push(k); if(r.status==="removed") sel.splice(sel.indexOf(k),1); if(r.status==="limit") showErr("That's five already."); mine.top5=sel; saveMine(); render(); }; o.appendChild(b); });
+  } else if(question==="decide"){
+    view.innerHTML=`<div class="kicker">You decide</div><h1>Development need – or opportunity gap?</h1><p class="sub">Two patterns from the demo cohort. What would you do about each?</p><div id="groups"></div>`;
+    const g=$("#groups");
+    DECIDE.forEach((D,di)=>{ const col = D.key==="decide1"?"var(--sd-lime)":"var(--sd-red)"; const wrap=document.createElement("div"); wrap.className="group"; wrap.innerHTML=`<div class="gk" style="color:${col}">Pattern ${di+1} · ${D.skill}</div><h2>${D.title}</h2><div class="opts"></div>`; const o=wrap.querySelector(".opts");
+      DECIDE_OPTIONS.forEach(([c,t1,t2],oi)=>{ const b=document.createElement("button"); b.className="opt"+(mine[D.key]===c?" on":""); b.innerHTML=`<span class="k">${di*2+oi+1}</span><span>${t1}<small>${t2}</small></span>`; b.onclick=async()=>{ const r=await cast(D.key,c); if(r){ mine[D.key]=c; saveMine(); render(); } }; o.appendChild(b); });
+      g.appendChild(wrap); });
+  } else if(question==="closed"){
+    view.innerHTML=`<div class="idle"><div class="ring"><div></div></div><h1>That's a wrap.</h1><p class="sub" style="margin-top:8px">Thanks for voting. You can close this now.</p></div>`;
+  } else {
+    view.innerHTML=`<div class="idle"><div class="ring"><div></div></div><h1>You're in.</h1><p class="sub" style="margin-top:8px">Keep this page open. The next question will appear here the moment it's on the big screen.</p></div>`;
+  }
+}
+
+async function loadQuestion(){
+  if(!sb) return;
+  const {data,error}=await sb.from("session_state").select("question").eq("id","live").single();
+  if(!error&&data&&data.question!==question){ question=data.question; render(); }
+}
+
+(async function boot(){
+  render();
+  if(!window.supabase){ setStatus(false,"offline"); showErr("Can't reach the voting service. Check your signal and reload."); return; }
+  sb = window.supabase.createClient(LIVE.url, LIVE.key, { realtime:{ params:{ eventsPerSecond: 5 } } });
+  await loadQuestion(); setStatus(true,"live");
+  sb.channel("state").on("postgres_changes",{event:"UPDATE",schema:"public",table:"session_state"},p=>{ if(p.new&&p.new.question!==question){ question=p.new.question; render(); } }).subscribe(st=>{ setStatus(st==="SUBSCRIBED", st==="SUBSCRIBED"?"live":"reconnecting"); });
+  setInterval(loadQuestion, 6000); // belt and braces
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden) loadQuestion(); });
+})();
+</script>
+</body>
+</html>

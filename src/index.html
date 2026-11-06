@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Skills intelligence in early talent – ISE Panel · Cappfinity</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --charcoal:#262626; --white:#fff; --violet:#9275FA; --blue:#487BFA; --gold:#FDB601; --pink:#FB6CF5;
+  --ink:#262626; --ink2:#5a5a5a; --ink3:#8a8a8a; --line:#e6e6ea; --paper:#fbfbfd;
+  --g-full:linear-gradient(45deg,#487BFA,#9275FA,#FB6CF5,#FDB601);
+  --g-energy:linear-gradient(135deg,#FDB601,#FB6CF5);
+  --g-trust:linear-gradient(135deg,#262626,#487BFA);
+  --g-innov:linear-gradient(135deg,#9275FA,#FB6CF5);
+  --sd-green:#0e9a4e; --sd-lime:#b4d12a; --sd-orange:#f58a1f; --sd-red:#e8334a;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:min(calc(100vw/120),calc(100vh/67.5));background:var(--paper)}
+body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--ink);height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* ambient background */
+.bg{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(7rem);opacity:.22;animation:drift 28s ease-in-out infinite alternate}
+.blob.a{width:50rem;height:50rem;left:-15rem;top:-20rem;background:var(--violet)}
+.blob.b{width:44rem;height:44rem;right:-12rem;top:10rem;background:var(--pink);animation-delay:-9s;opacity:.14}
+.blob.c{width:40rem;height:40rem;left:30rem;bottom:-25rem;background:var(--blue);animation-delay:-18s;opacity:.16}
+.blob.d{width:26rem;height:26rem;right:20rem;bottom:-12rem;background:var(--gold);animation-delay:-4s;opacity:.12}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(4rem,3rem) scale(1.12)}}
+body.quiet .blob{opacity:.12}
+
+/* chrome */
+.top{position:fixed;top:0;left:0;right:0;max-width:calc(100vh*16/9);margin:0 auto;height:5rem;display:flex;align-items:center;justify-content:space-between;padding:0 3rem;z-index:5}
+.top img{height:1.9rem;display:block}
+.crumb{font-size:.95rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:500}
+.crumb b{color:var(--ink);font-weight:600;margin-right:.9rem}
+.crumb b::before{content:"";display:inline-block;width:.55rem;height:.55rem;border-radius:50%;background:var(--g-energy);margin-right:.6rem;vertical-align:.08em}
+.dots{position:fixed;bottom:2.35rem;left:50%;transform:translateX(-50%);display:flex;gap:.5rem;z-index:5}
+.dots i{display:block;width:.55rem;height:.55rem;border-radius:1rem;background:#d6d6de;transition:all .4s var(--ease)}
+.dots i.on{width:2.2rem;background:var(--g-full)}
+.dots i.done{background:#b9b9c4}
+.foot{position:fixed;bottom:2.1rem;left:3rem;font-size:.85rem;color:var(--ink3);z-index:5;letter-spacing:.04em}
+.foot span{color:var(--pink)}
+
+/* stage */
+#stage{position:relative;z-index:1;height:100vh;padding:7rem 6rem 5rem}
+.scene{position:absolute;inset:0;max-width:calc(100vh*16/9);margin:0 auto;padding:7rem 6rem 5rem;opacity:0;transform:translateY(1.2rem);transition:opacity .55s var(--ease),transform .55s var(--ease);pointer-events:none}
+.scene.on{opacity:1;transform:none;pointer-events:auto}
+.scene.off{opacity:0;transform:translateY(-1.2rem)}
+
+/* type */
+h1{font-size:5.2rem;line-height:1.02;letter-spacing:-.025em;font-weight:700}
+h2{font-size:3.4rem;line-height:1.08;letter-spacing:-.02em;font-weight:700}
+h3{font-size:1.6rem;font-weight:600;letter-spacing:-.01em}
+.kicker{font-size:1rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);font-weight:600;margin-bottom:1.6rem}
+.kicker.g{background:var(--g-full);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:1.7rem;line-height:1.4;color:var(--ink2);font-weight:400}
+.grad{background:var(--g-full);-webkit-background-clip:text;background-clip:text;color:transparent}
+.gold{color:var(--gold)}
+.muted{color:var(--ink3)}
+
+/* build steps */
+[data-step]{opacity:0;transform:translateY(1rem);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+[data-step].in{opacity:1;transform:none}
+[data-step].past{opacity:.38}
+
+/* cards */
+.card{background:var(--white);border:1px solid var(--line);border-radius:1.4rem;padding:1.8rem 2rem;box-shadow:0 1rem 3rem rgba(38,38,38,.06)}
+.card.dark{background:var(--charcoal);color:#fff;border:0}
+.card.dark .muted{color:#b5b5c0}
+
+/* ---- arrival ---- */
+.arrive{display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:1fr auto;gap:2rem 5rem;align-items:center;height:100%}
+.journey{grid-column:1/-1;display:grid;grid-template-columns:24rem 1fr;gap:2.5rem;align-items:center;padding:1.6rem 2rem;background:#fff;border:1px solid var(--line);border-radius:1.4rem;box-shadow:0 1rem 3rem rgba(38,38,38,.06)}
+.journey .jk p{font-size:1.05rem;color:var(--ink2);line-height:1.35;margin-top:.5rem}
+.jsteps{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:1rem;align-items:center}
+.jstep{display:grid;grid-template-columns:auto 1fr;gap:.4rem .9rem;align-items:center}
+.jstep i{grid-row:1/3;width:2.6rem;height:2.6rem;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;color:#fff;background:var(--charcoal);position:relative}
+.jstep i::before{content:"";position:absolute;inset:-.3rem;border-radius:50%;background:var(--g-full);z-index:-1}
+.jstep b{font-size:1.3rem;letter-spacing:-.01em}
+.jstep span{font-size:.95rem;color:var(--ink2);line-height:1.3}
+.jarrow{width:3.5rem;height:2px;background:var(--g-full);position:relative;opacity:.8}
+.jarrow::after{content:"";position:absolute;right:-1px;top:-.3rem;border:.35rem solid transparent;border-left-color:var(--gold)}
+.arrive h1{font-size:4.3rem;line-height:1.06;max-width:52rem}
+.arrive .sub{font-size:1.9rem;color:var(--ink2);margin-top:1.6rem;line-height:1.35;max-width:40rem}
+.arrive .meta{margin-top:3rem;display:flex;gap:1rem;align-items:center;font-size:1rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+.arrive .meta i{width:3rem;height:2px;background:var(--g-full);display:block}
+.people{display:flex;flex-direction:column;gap:1rem}
+.person{display:flex;align-items:center;gap:1.4rem;padding:1.3rem 1.6rem;border-radius:1.2rem;background:#fff;border:1px solid var(--line);box-shadow:0 .8rem 2.4rem rgba(38,38,38,.05)}
+.person.chair{background:var(--charcoal);color:#fff;border:0}
+.avatar{width:4.2rem;height:4.2rem;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:700;font-size:1.3rem;color:#fff;position:relative;background:var(--g-full)}
+.avatar::after{content:"";position:absolute;inset:.22rem;border-radius:50%;background:var(--charcoal)}
+.avatar span{position:relative;z-index:1}
+.person .name{font-size:1.45rem;font-weight:700;letter-spacing:-.01em}
+.person .role{font-size:1rem;color:var(--ink2);margin-top:.2rem;line-height:1.3}
+.person.chair .role{color:#c8c8d2}
+.person .tag{margin-left:auto;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;padding:.4rem .7rem;border-radius:2rem;background:var(--g-energy);color:#262626;flex:none}
+
+/* ---- problem ---- */
+.problem{display:grid;grid-template-columns:1fr 1.15fr;gap:5rem;height:100%;align-items:center}
+.problem>div:first-child{display:flex;flex-direction:column;justify-content:center}
+.problem .statement{font-size:2.6rem;line-height:1.22;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.problem .statement em{font-style:normal;background:var(--g-full);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sowhat{font-size:7.5rem;font-weight:800;letter-spacing:-.04em;line-height:1;margin-top:2.4rem;background:var(--g-full);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
+.qs{display:flex;flex-direction:column;gap:1rem;justify-content:center}
+.q{display:flex;gap:1.4rem;align-items:flex-start;padding:1.35rem 1.6rem;background:#fff;border:1px solid var(--line);border-radius:1.2rem;font-size:1.45rem;line-height:1.3;font-weight:500}
+.q .n{flex:none;width:2.4rem;height:2.4rem;border-radius:50%;display:grid;place-items:center;font-size:1rem;font-weight:700;color:#fff;background:var(--charcoal)}
+.q.in .n{background:var(--g-innov)}
+.note{margin-top:auto;display:flex;gap:1rem;align-items:center;font-size:1.1rem;color:var(--ink2);padding:1rem 1.4rem;background:rgba(253,182,1,.12);border-radius:1rem;width:fit-content}
+.note b{color:var(--ink)}
+
+/* ---- poll ---- */
+.poll{display:grid;grid-template-columns:1fr 1.1fr;gap:5rem;height:100%;align-items:center}
+.poll h2{font-size:3.6rem}
+.poll .hint{margin-top:2rem;font-size:1.15rem;color:var(--ink3)}
+.bars{display:flex;flex-direction:column;gap:1.4rem}
+.bar{display:grid;grid-template-columns:2.6rem 14rem 1fr 5.5rem 7rem;gap:1.1rem;align-items:center;cursor:pointer;border-radius:1rem}
+.bar:hover .track{border-color:var(--violet)}
+.bar .lbl2{font-size:1.35rem;font-weight:600;line-height:1.15}
+.bar .k{width:2.6rem;height:2.6rem;border-radius:.8rem;display:grid;place-items:center;font-weight:700;background:var(--charcoal);color:#fff;font-size:1.1rem}
+.bar .track{position:relative;height:4.4rem;background:#fff;border:1px solid var(--line);border-radius:1rem;overflow:hidden}
+.bar .fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:1rem;background:var(--g-full);background-size:200% 100%;transition:width .7s var(--ease);min-width:0}
+.bar .lbl{position:absolute;left:1.4rem;top:50%;transform:translateY(-50%);font-size:1.35rem;font-weight:600;mix-blend-mode:normal;z-index:1}
+.bar.lead .fill{box-shadow:0 0 0 .25rem rgba(253,182,1,.35) inset}
+.bar .v{text-align:right;font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums}
+.bar .v small{display:block;font-size:.85rem;color:var(--ink3);font-weight:500}
+.total{margin-top:1.4rem;font-size:1rem;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+
+/* ---- 80 skills ---- */
+.eighty{display:grid;grid-template-columns:34rem 1fr;gap:3.5rem;height:100%;align-items:stretch;min-height:0}
+.eleft{display:flex;flex-direction:column;gap:1.2rem;justify-content:center;min-height:0}
+.eleft .skillcard{flex:0 1 auto}
+.eleft .bignum{font-size:11rem}
+.eright{display:grid;grid-template-rows:auto 1fr;gap:1rem;min-height:0;height:100%;overflow:hidden}
+.fams{display:flex;gap:.6rem;flex-wrap:wrap}
+.fchip{display:flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border-radius:2rem;border:1.5px solid var(--line);background:#fff;font-size:.95rem;font-weight:600}
+.fchip i{width:.8rem;height:.8rem;border-radius:50%;display:block}
+.fchip.on{border-color:var(--charcoal);background:var(--charcoal);color:#fff}
+.sgrid{display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);gap:.45rem;min-height:0;overflow:hidden}
+.stile{display:flex;align-items:center;gap:.4rem;padding:.3rem .55rem .3rem .7rem;min-height:0;border-left:.35rem solid var(--fc,#ccc);background:#fff;border:1px solid var(--line);border-radius:.6rem;text-align:left;font-size:.74rem;font-weight:600;line-height:1.1;opacity:0;transform:scale(.8);animation:pop .4s var(--ease) forwards;transition:all .25s;min-width:0}
+.stile span{overflow:hidden;line-height:1.05;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:normal}
+.sgrid.still .stile{animation:none;opacity:1;transform:none}
+.skillcard .fav{display:inline-block;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;padding:.35rem .7rem;border-radius:2rem;background:var(--g-energy);color:#262626;font-weight:700;width:fit-content}
+.stile i{display:none}
+.stile{border-left:.35rem solid var(--fc,#ccc)}
+.stile:hover{border-color:var(--violet);transform:translateY(-.1rem)}
+.stile.on{background:var(--charcoal);color:#fff;border-color:transparent;border-left-color:var(--fc)}
+.stile.dim{opacity:.25!important}
+.skillcard{padding:1.6rem 1.8rem;display:flex;flex-direction:column;gap:.9rem;min-height:0;overflow:hidden}
+.sk-head{display:flex;align-items:center;gap:1rem}
+.sk-head .ic{width:4rem;height:4rem;border-radius:50%;background:var(--g-full);display:grid;place-items:center;flex:none}
+.sk-head .ic div{width:3rem;height:3rem;border-radius:50%;background:var(--charcoal);display:grid;place-items:center;font-size:1.3rem;font-weight:800;color:#fff}
+.sk-head h3{font-size:1.9rem;line-height:1}
+.sk-def{font-size:1rem;line-height:1.4;color:#d4d4dc}
+.sk-tabs{display:flex;flex-wrap:wrap;gap:.35rem}
+.sk-tab{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:.35rem .6rem;border-radius:2rem;background:rgba(255,255,255,.1);color:#c8c8d2}
+.sk-tab.on{background:var(--g-energy);color:#262626}
+.sk-list{list-style:none;display:flex;flex-direction:column;gap:.5rem;font-size:.98rem;line-height:1.35;overflow:hidden}
+.sk-list li{padding-left:1rem;position:relative}
+.sk-list li::before{content:"";position:absolute;left:0;top:.5rem;width:.4rem;height:.4rem;border-radius:50%;background:var(--g-energy)}
+.liblink{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.2rem;padding:.7rem 1.1rem;border-radius:2rem;background:var(--charcoal);color:#fff;text-decoration:none;font-size:.95rem;font-weight:600;width:fit-content;transition:all .2s}
+.liblink:hover{background:var(--g-full)}
+.liblink span{font-size:1.05rem}
+.bigrow{display:flex;align-items:center;gap:1rem;font-size:1.5rem;font-weight:700;line-height:1.1}
+.bigrow small{font-size:1rem;color:var(--ink3);font-weight:500}
+.skillcard .fam{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-bottom:.3rem}
+.bignum{font-size:16rem;line-height:.9;font-weight:800;letter-spacing:-.06em;background:var(--g-full);-webkit-background-clip:text;background-clip:text;color:transparent}
+.types{display:flex;gap:.8rem;margin-top:2rem;flex-wrap:wrap}
+.chip{padding:.6rem 1.1rem;border-radius:2rem;border:1.5px solid var(--line);font-size:1rem;font-weight:600;background:#fff}
+.chip.on{border-color:transparent;background:var(--charcoal);color:#fff}
+.field{display:grid;grid-template-columns:repeat(10,1fr);gap:.55rem}
+.field i{display:block;aspect-ratio:1;border-radius:.55rem;background:#fff;border:1px solid var(--line);opacity:0;transform:scale(.6);animation:pop .5s var(--ease) forwards}
+.field i.hi{background:var(--g-full);border:0}
+@keyframes pop{to{opacity:1;transform:none}}
+.evidence{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.ev{padding:1.2rem 1.4rem;background:#fff;border:1px solid var(--line);border-radius:1.2rem}
+.ev .big{font-size:2.4rem;font-weight:800;letter-spacing:-.03em;line-height:1;background:var(--g-full);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ev .t{margin-top:.6rem;font-size:1.15rem;line-height:1.3;font-weight:500;color:var(--ink2)}
+.example{display:grid;grid-template-columns:auto 1fr;gap:2rem;align-items:center;padding:2.2rem 2.6rem}
+.example .ic{width:7rem;height:7rem;border-radius:50%;background:var(--g-full);display:grid;place-items:center}
+.example .ic div{width:5.6rem;height:5.6rem;border-radius:50%;background:var(--charcoal);display:grid;place-items:center;font-size:2.2rem;font-weight:800;color:#fff}
+.example h3{font-size:2.4rem}
+.example p{font-size:1.3rem;color:#c8c8d2;line-height:1.4;margin-top:.5rem}
+.example .fav{display:inline-block;margin-top:.9rem;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;padding:.35rem .7rem;border-radius:2rem;background:var(--g-energy);color:#262626;font-weight:700}
+
+/* ---- top 5 tiles ---- */
+.top5{display:grid;grid-template-rows:auto 1fr;gap:2rem;height:100%}
+.top5>div:last-child{min-height:0;height:100%}
+.tiles{height:100%}
+.top5 .head{display:flex;justify-content:space-between;align-items:flex-end}
+.top5 .head h2{font-size:3rem}
+.timer{font-size:3rem;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em;color:var(--ink3)}
+.timer.run{color:var(--ink)}
+.timer.low{color:var(--pink)}
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:1fr;gap:1rem}
+.tile{position:relative;background:#fff;border:1px solid var(--line);border-radius:1.1rem;padding:1.1rem 1.2rem;text-align:left;display:flex;flex-direction:column;justify-content:space-between;transition:all .35s var(--ease);overflow:hidden}
+.tile:hover{border-color:var(--violet);transform:translateY(-.15rem)}
+.tile .nm{font-size:1.3rem;font-weight:600;letter-spacing:-.01em;line-height:1.15}
+.tile .df{font-size:.85rem;color:var(--ink2);line-height:1.25;margin-top:.3rem}
+.tile .ct{font-size:1rem;color:var(--ink3);font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.tile .ct .ctl{color:var(--ink);font-size:1.05rem}
+.tile:not(.has) .ct .ctl{color:var(--ink3)}
+.tile{cursor:pointer}
+.tile .ct b{font-size:1.6rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.tile .meter{position:absolute;left:0;bottom:0;height:.35rem;width:0;background:var(--g-full);transition:width .5s var(--ease)}
+.tile.win{background:var(--charcoal);color:#fff;border:0}
+.tile.win .ct b{color:#fff}
+.tile.lose{opacity:.25;filter:grayscale(1)}
+.podium{display:grid;grid-template-columns:repeat(5,1fr);gap:1.2rem;align-items:end;height:100%}
+.pod{background:var(--charcoal);color:#fff;border-radius:1.4rem;padding:1.8rem;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;animation:rise .8s var(--ease) both}
+.pod::before{content:"";position:absolute;left:0;right:0;top:0;height:.5rem;background:var(--g-full)}
+.pod .rank{font-size:5rem;font-weight:800;letter-spacing:-.05em;line-height:1;background:var(--g-energy);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pod .nm{font-size:1.7rem;font-weight:700;margin-top:1rem;line-height:1.1}
+.pod .ct{font-size:1rem;color:#b5b5c0;margin-top:.5rem}
+@keyframes rise{from{transform:translateY(3rem);opacity:0}to{transform:none;opacity:1}}
+.prompts{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
+.t5row{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem}
+.t5chip{background:var(--charcoal);color:#fff;border-radius:1.1rem;padding:1.2rem 1.4rem;display:flex;align-items:center;gap:1rem;font-size:1.4rem;font-weight:700;letter-spacing:-.01em}
+.t5chip b{font-size:2.4rem;background:var(--g-energy);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+.prompt{padding:2.2rem 2.4rem;border-radius:1.3rem;background:#fff;border:1px solid var(--line);font-size:1.9rem;line-height:1.3;font-weight:500}
+.prompt .who{display:block;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-bottom:.8rem;background:var(--g-full);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ---- charts ---- */
+.chartwrap{display:grid;grid-template-rows:auto 1fr auto;gap:1.4rem;height:100%}
+.chartwrap>*{min-height:0}
+.chartwrap h2{font-size:2.9rem}
+.hbars{display:grid;grid-template-columns:1fr;grid-auto-rows:minmax(0,1fr);row-gap:.45rem;align-content:stretch;min-height:0;overflow:hidden}
+.hb{display:grid;grid-template-columns:16rem 1fr 4.5rem;gap:1.2rem;align-items:center;font-size:1.2rem;min-height:0}
+.hb .n{text-align:right;font-weight:600;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb .tr{position:relative;height:min(2.2rem,100%);max-height:100%;background:#fff;border:1px solid var(--line);border-radius:.5rem;overflow:hidden}
+.hb .f{height:100%;width:0;border-radius:.4rem;background:linear-gradient(90deg,var(--blue),var(--violet));transition:width .9s var(--ease)}
+.hb.hot .f{background:var(--g-energy)}
+.hb.room .n{color:var(--ink)}
+.hb.room .n::before{content:"★ ";color:var(--gold)}
+.hb .v{font-weight:700;font-variant-numeric:tabular-nums}
+.hb .tick{position:absolute;top:0;bottom:0;width:1px;background:#ececf2;z-index:0}
+.hb .f{position:relative;z-index:1}
+.hb.axis{height:1.6rem}
+.hb.axis .axl{position:relative;height:100%}
+.hb.axis .axl span{position:absolute;transform:translateX(-50%);font-size:.8rem;color:var(--ink3);font-weight:600;letter-spacing:.04em}
+.hb.axis .axl span:first-child{transform:none}
+.hb.axis .axl span:last-child{transform:translateX(-100%)}
+.red .hb .f{background:linear-gradient(90deg,var(--pink),var(--violet))}
+.legend{display:flex;gap:2rem;font-size:1rem;color:var(--ink2);align-items:center}
+.legend i{display:inline-block;width:1.3rem;height:.8rem;border-radius:.25rem;margin-right:.5rem;vertical-align:-.05em}
+.takeaway{font-size:1.7rem;font-weight:600;letter-spacing:-.01em;padding:1.3rem 1.8rem;border-radius:1.2rem;background:var(--charcoal);color:#fff;width:fit-content;max-width:70rem;line-height:1.3;margin:0 auto;text-align:center}
+.takeaway em{font-style:normal;background:var(--g-energy);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* slope */
+.slope{position:relative;height:100%}
+.slope svg{width:100%;height:100%}
+.slope text{font-family:inherit;font-weight:600;fill:var(--ink2)}
+.slope text.h{fill:var(--ink);font-weight:700}
+.slope text.hd{letter-spacing:.14em;text-transform:uppercase;fill:var(--ink3)}
+.slope line{stroke:#d9d9e2;stroke-width:1.5}
+.slope line.h{stroke:url(#gfull);stroke-width:4}
+.slope circle{fill:#fff;stroke:#c9c9d4;stroke-width:1.5}
+.slope circle.h{stroke:var(--violet);stroke-width:3}
+
+/* ---- skills discovery ---- */
+.sd{display:grid;grid-template-rows:auto 1fr;gap:1.6rem;height:100%}
+.sd>*{min-height:0}
+.sd h2{font-size:2.9rem}
+.dims{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto;gap:1.2rem;align-content:center;min-height:0}
+.dims .outcome{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between;gap:2rem;padding:2.6rem 3rem;min-height:17rem}
+.dims .outcome .do{font-size:1.5rem;margin-top:1rem;font-weight:600;max-width:60rem;line-height:1.3}
+.dims .outcome h3{font-size:3.6rem}
+.dims .outcome p{font-size:1.5rem}
+.dim{background:#fff;border:1px solid var(--line);border-radius:1.3rem;padding:1.5rem;display:flex;flex-direction:column;gap:.9rem;transition:opacity .4s}
+.dim.off{opacity:.3;pointer-events:none}
+.dim .dh{display:flex;align-items:center;gap:.9rem}
+.dim .dh .ic{width:2.8rem;height:2.8rem;border-radius:50%;background:var(--g-full);display:grid;place-items:center;color:#fff;font-weight:800;font-size:1.1rem}
+.dim .dh b{font-size:1.5rem;letter-spacing:-.01em}
+.dim .dh small{display:block;font-size:.9rem;color:var(--ink3);font-weight:500}
+.opt{padding:1rem 1.2rem;border-radius:.9rem;border:1.5px solid var(--line);font-size:1.15rem;font-weight:600;text-align:left;transition:all .25s;display:flex;justify-content:space-between;align-items:center}
+.opt:hover{border-color:var(--violet)}
+.opt.on{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
+.opt.ghost{opacity:.5;font-style:italic;font-weight:500}
+.outcome{border-radius:1.3rem;padding:1.8rem;color:#fff;display:flex;flex-direction:column;justify-content:space-between;transition:background .5s;background:var(--charcoal);min-height:100%}
+.outcome .k{font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;opacity:.8;font-weight:700}
+.outcome h3{font-size:2.6rem;line-height:1;margin-top:.6rem;letter-spacing:-.02em}
+.outcome p{font-size:1.2rem;opacity:.9;margin-top:.8rem;line-height:1.35}
+.outcome .act{margin-top:0;flex:none;font-size:1.1rem;padding:.9rem 1.4rem;display:inline-block;padding:.6rem 1rem;border-radius:2rem;background:rgba(255,255,255,.18);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:.9rem;width:fit-content}
+.outcome.wait{color:#c8c8d2}
+.outcome.wait h3{color:#fff}
+.four{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;align-content:center}
+.oc .do{padding:0 1.6rem 1.4rem;font-size:1.25rem;line-height:1.35;color:var(--ink)}
+.oc{background:#fff;border:1px solid var(--line);border-radius:1.3rem;overflow:hidden}
+.oc .hd{padding:1.4rem 1.6rem .9rem}
+.oc .hd b{font-size:1.7rem;letter-spacing:-.01em;display:block}
+.oc .hd span{color:var(--ink2);font-size:1.05rem}
+.oc .band{padding:.6rem 1.6rem;color:#fff;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.9rem}
+.oc .sig{display:flex;gap:1rem;padding:1.2rem 1.6rem;align-items:center}
+.oc .sig span{font-size:.95rem;color:var(--ink2);font-weight:600;padding:.45rem .8rem;border-radius:2rem;background:var(--paper);border:1px solid var(--line)}
+.oc.g .band{background:var(--sd-green)} .oc.l .band{background:var(--sd-lime)} .oc.o .band{background:var(--sd-orange)} .oc.r .band{background:var(--sd-red)}
+/* cohort pattern */
+.pattern{display:grid;grid-template-columns:1.9fr 1fr;gap:3rem;height:100%;align-items:center;min-height:0}
+.heat{display:grid;grid-template-columns:12rem repeat(14,1fr);gap:.5rem;align-items:center}
+.heat .rl{font-size:1.05rem;font-weight:600;color:var(--ink2);text-align:right;padding-right:.6rem}
+.heat .rl.h{color:var(--ink);font-weight:700}
+.heat .c{aspect-ratio:1;border-radius:.45rem;background:#e9e9ef;transition:all .4s}
+.heat .c.g{background:var(--sd-green)}.heat .c.l{background:var(--sd-lime)}.heat .c.o{background:var(--sd-orange)}.heat .c.r{background:var(--sd-red)}
+.heat .row-h .c{transform:scale(1.08);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--violet)}
+.heat .ch{font-size:.75rem;color:var(--ink3);text-align:center;font-weight:600}
+.heat .dim-row .c{opacity:.22}
+.pkey{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:1.4rem;font-size:.95rem;color:var(--ink2)}
+.pkey i{display:inline-block;width:.9rem;height:.9rem;border-radius:.25rem;margin-right:.4rem;vertical-align:-.1em}
+.pside .kicker{margin-bottom:.8rem}
+.pside h3{font-size:2.6rem;letter-spacing:-.02em;line-height:1.05}
+.pside p{font-size:1.3rem;color:var(--ink2);margin-top:1rem;line-height:1.4}
+.pside .stat{margin-top:1.6rem;display:flex;gap:1.5rem}
+.pside .stat div{padding:1rem 1.3rem;background:#fff;border:1px solid var(--line);border-radius:1rem}
+.pside .stat b{display:block;font-size:2.2rem;letter-spacing:-.03em;line-height:1}
+.pside .stat span{font-size:.9rem;color:var(--ink3)}
+.decide{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;align-content:center}
+.dc{border-radius:1.6rem;padding:2.4rem;display:flex;flex-direction:column;justify-content:space-between;background:#fff;border:1px solid var(--line);position:relative;overflow:hidden;text-align:left}
+.dc .k{width:3rem;height:3rem;border-radius:.9rem;display:grid;place-items:center;font-weight:800;background:var(--charcoal);color:#fff;font-size:1.3rem}
+.dc h3{font-size:2.6rem;margin-top:1.4rem;letter-spacing:-.02em;line-height:1.05}
+.dc p{font-size:1.3rem;color:var(--ink2);margin-top:.8rem;line-height:1.4}
+.dc .big{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;font-size:4.2rem;font-weight:800;letter-spacing:-.04em;line-height:1;margin-top:1.5rem;font-variant-numeric:tabular-nums}
+.dc .big small{font-size:1.1rem;color:var(--ink3);font-weight:600;letter-spacing:0;margin-left:0}
+.dc .big .step{font-size:1rem;letter-spacing:0;margin-left:auto}
+.dc .fillbar{position:absolute;left:0;right:0;bottom:0;height:.7rem;background:var(--line)}
+.dc .fillbar i{display:block;height:100%;width:0;transition:width .7s var(--ease)}
+.dc.a .fillbar i{background:linear-gradient(90deg,var(--sd-orange),var(--sd-red))}
+.dc.b .fillbar i{background:linear-gradient(90deg,var(--sd-green),var(--sd-lime))}
+.msg{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;height:100%;align-content:center}
+.msg .card{font-size:1.75rem;line-height:1.3;font-weight:500;padding:2.4rem 2.6rem}
+.msg .card .kicker{margin-bottom:1rem}
+.callback{grid-column:1/-1;display:grid;grid-template-columns:auto 1fr;gap:2.4rem;align-items:center;padding:2.2rem 2.6rem}
+.callback .pct{font-size:6rem;font-weight:800;letter-spacing:-.05em;line-height:1;background:var(--g-energy);-webkit-background-clip:text;background-clip:text;color:transparent}
+.callback .t{font-size:1.9rem;line-height:1.3;font-weight:600}
+.callback .t small{display:block;font-size:1.1rem;color:#b5b5c0;font-weight:500;margin-top:.5rem}
+
+/* ---- panel ---- */
+.panel{display:grid;grid-template-columns:30rem 1fr;gap:4rem;height:100%;align-items:center}
+.pcard{background:var(--charcoal);color:#fff;border-radius:1.8rem;padding:2.4rem;position:relative;overflow:hidden}
+.pcard::after{content:"";position:absolute;right:-6rem;bottom:-6rem;width:16rem;height:16rem;border-radius:50%;background:var(--g-full);opacity:.9;filter:blur(2.5rem)}
+.pcard .avatar{width:5.4rem;height:5.4rem;font-size:1.6rem}
+.pcard .name{font-size:2.3rem;font-weight:700;margin-top:1.4rem;letter-spacing:-.02em;position:relative;z-index:1}
+.pcard .role{font-size:1.1rem;color:#c8c8d2;margin-top:.5rem;line-height:1.35;position:relative;z-index:1}
+.pcard .lens{margin-top:1.8rem;display:inline-block;padding:.5rem .9rem;border-radius:2rem;background:rgba(255,255,255,.12);font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;position:relative;z-index:1}
+.pq{font-size:3.3rem;line-height:1.15;font-weight:700;letter-spacing:-.025em;max-width:62rem}
+.pq .kicker{margin-bottom:1.6rem}
+.pq .ask{display:inline-block;margin-top:2rem;font-size:1.1rem;padding:.7rem 1.2rem;border-radius:2rem;background:rgba(253,182,1,.16);font-weight:600;letter-spacing:.02em}
+.pq .clock{margin-top:2rem;font-size:5rem;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:var(--ink3)}
+.pq .clock.run{color:var(--ink)} .pq .clock.low{color:var(--pink)}
+.pq .clock small{font-size:1rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-left:1rem;font-weight:600}
+.pair{grid-template-columns:1fr 1fr}
+.pair .pcard{padding:1.8rem}
+.pair .pcard .name{font-size:1.8rem}
+
+/* ---- conclusion ---- */
+.conc{display:grid;grid-template-rows:auto auto;gap:3rem;height:100%;align-content:center}
+.conc h2{font-size:3rem;max-width:70rem}
+.tks{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;align-content:center}
+.tk{padding:2.2rem 2.4rem;border-radius:1.4rem;background:#fff;border:1px solid var(--line);font-size:1.9rem;line-height:1.25;font-weight:600;letter-spacing:-.015em;display:flex;gap:1.4rem;align-items:flex-start}
+.tk .n{flex:none;width:3rem;height:3rem;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:1.1rem;background:var(--g-innov);font-weight:800}
+.tk.in{background:var(--charcoal);color:#fff;border:0}
+
+/* ---- close ---- */
+.energ{display:grid;grid-template-rows:auto auto;gap:2rem;height:100%;align-content:center}
+.energ h2{font-size:2.9rem}
+.vs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.4rem}
+.vsrow{display:grid;grid-template-rows:auto 1fr auto 1fr;gap:.8rem;min-height:30rem;background:#fff;border:1px solid var(--line);border-radius:1.4rem;padding:1.4rem;text-align:center}
+.vsrow .t{font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:700}
+.vsrow .or{font-size:1rem;font-weight:800;color:var(--ink3)}
+.side{border-radius:1rem;padding:1.6rem 1rem;font-size:1.7rem;font-weight:700;letter-spacing:-.015em;border:1.5px solid var(--line);transition:all .3s;line-height:1.1;display:grid;place-items:center}
+.side:hover{border-color:var(--violet)}
+.side.on{background:var(--charcoal);color:#fff;border-color:transparent;box-shadow:0 0 0 .3rem rgba(253,182,1,.5)}
+.close{display:grid;grid-template-columns:1fr auto;gap:5rem;align-items:center;height:100%}
+.close h1{font-size:5.6rem}
+.close .lead{margin-top:1.6rem;max-width:48rem}
+.close .thanks{margin-top:3rem;font-size:1.1rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+.qr{background:#fff;border:1px solid var(--line);border-radius:1.8rem;padding:2rem;text-align:center;box-shadow:0 1rem 3rem rgba(38,38,38,.08)}
+.qr svg{width:20rem;height:20rem;display:block;margin:0 auto}
+.qr .u{margin-top:1.2rem;font-size:1.05rem;font-weight:600}
+.qr .sdmark svg{width:14rem;height:auto;display:block;margin:0 auto 1.2rem}
+.qr .k{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:700;margin-bottom:1rem}
+
+/* ---- host panel ---- */
+#host{position:fixed;top:0;right:0;bottom:0;width:30rem;background:#1b1b1f;color:#e8e8ee;z-index:50;transform:translateX(100%);transition:transform .35s var(--ease);padding:1.4rem;overflow:auto;font-size:.95rem;box-shadow:-1rem 0 3rem rgba(0,0,0,.25)}
+#host.open{transform:none}
+#host h4{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:#8d8d9a;margin:1.2rem 0 .6rem}
+#host .sec{display:flex;gap:.7rem;align-items:center;padding:.45rem .6rem;border-radius:.5rem;width:100%;text-align:left}
+#host .sec:hover{background:#2a2a30}
+#host .sec.on{background:#33333c;color:#fff}
+#host .sec i{width:1.5rem;height:1.5rem;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:.75rem;background:#3a3a44;flex:none}
+#host .sec.on i{background:var(--g-full)}
+#host .notes{background:#26262c;border-radius:.6rem;padding:.9rem;line-height:1.4;color:#c9c9d4}
+#host .notes li{margin-left:1rem;margin-bottom:.35rem}
+#host .ctl{display:grid;grid-template-columns:1fr 4.5rem;gap:.4rem .6rem;align-items:center;margin-bottom:.35rem}
+#host input{width:100%;background:#0f0f12;border:1px solid #3a3a44;color:#fff;border-radius:.4rem;padding:.35rem .5rem;font:inherit;text-align:right}
+#host .btn{display:inline-block;padding:.45rem .8rem;border-radius:.5rem;background:#33333c;color:#fff;margin:.2rem .3rem .2rem 0;font-size:.85rem}
+#host .btn:hover{background:#44444f}
+#host kbd{background:#0f0f12;border:1px solid #3a3a44;border-radius:.3rem;padding:.05rem .35rem;font-family:inherit;font-size:.8rem;color:#fff}
+#host .keys{color:#9c9ca8;line-height:1.7}
+#hosttab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:49;width:.6rem;height:5rem;border-radius:.4rem 0 0 .4rem;background:transparent;opacity:0}
+#hosttab:hover{opacity:1;background:#bbb}
+.nav{position:fixed;right:2.4rem;bottom:1rem;display:flex;align-items:center;gap:.5rem;z-index:6}
+.nav button{width:3.2rem;height:3.2rem;border-radius:50%;background:#fff;border:1px solid var(--line);font-size:1.4rem;display:grid;place-items:center;color:var(--ink);box-shadow:0 .4rem 1.2rem rgba(38,38,38,.08);transition:all .2s}
+.nav button:hover{background:var(--charcoal);color:#fff;border-color:transparent}
+.nav button#nextbtn{background:var(--charcoal);color:#fff;border:0}
+.nav button#resetbtn{margin-right:.6rem;font-size:1.5rem;color:var(--ink3)}
+.nav button#nextbtn:hover{background:var(--g-full)}
+.nav span{font-size:.85rem;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase;font-weight:600;min-width:6rem;text-align:center}
+.endscreen{display:grid;place-items:center;height:100%}
+.lockup svg{width:58rem;height:auto;display:block;animation:lockin 1.4s var(--ease) both}
+@keyframes lockin{from{opacity:0;transform:translateY(1.5rem) scale(.98)}to{opacity:1;transform:none}}
+body.end .top,body.end .foot{opacity:0;transition:opacity .6s}
+.step{display:inline-flex;align-items:center;gap:.2rem;background:var(--paper);border:1px solid var(--line);border-radius:2rem;padding:.15rem}
+.step button{width:1.9rem;height:1.9rem;border-radius:50%;display:grid;place-items:center;font-size:1.2rem;font-weight:700;color:var(--ink2);line-height:1}
+.step button:hover{background:var(--charcoal);color:#fff}
+.step b{min-width:1.6rem;text-align:center;font-size:1.1rem;font-variant-numeric:tabular-nums}
+.tile.win .step,.dc .step{background:rgba(255,255,255,.9)}
+.tile.win .step b,.tile.win .step button{color:var(--ink)}
+.resetmenu{position:fixed;right:2.4rem;bottom:5rem;background:#fff;border:1px solid var(--line);border-radius:1rem;box-shadow:0 1rem 3rem rgba(38,38,38,.15);padding:.6rem;display:none;flex-direction:column;gap:.3rem;z-index:40;min-width:18rem}
+.resetmenu.open{display:flex}
+.resetmenu button{text-align:left;padding:.7rem .9rem;border-radius:.6rem;font-size:.95rem;font-weight:600}
+.resetmenu button:hover{background:var(--paper)}
+.resetmenu button.danger{color:#c8102e}
+.resetmenu small{display:block;font-size:.8rem;color:var(--ink3);font-weight:500;margin-top:.15rem}
+.qrcard{display:inline-flex;flex-direction:column;align-items:center;gap:.4rem;padding:1rem 1.2rem;background:#fff;border:1px solid var(--line);border-radius:1.2rem;box-shadow:0 .8rem 2.4rem rgba(38,38,38,.06);margin-top:2rem}
+.qrcard svg{width:11rem;height:11rem;display:block}
+.qrcard .qrk{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;background:var(--g-full);-webkit-background-clip:text;background-clip:text;color:transparent}
+.qrcard .qru{font-size:1rem;font-weight:700}
+.qrslot.mini .qrcard{margin-top:0;flex-direction:row;padding:.6rem .9rem;gap:.9rem}
+.qrslot.mini .qrcard svg{width:5.6rem;height:5.6rem}
+.qrslot.mini .qrcard .qrk{order:1}
+.headr{display:flex;align-items:center;gap:1.6rem}
+.sdhead{display:flex;justify-content:space-between;align-items:flex-start;gap:2rem}
+.livebadge{position:fixed;top:1.6rem;left:50%;transform:translateX(-50%);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--ink3);display:flex;align-items:center;gap:.5rem;z-index:5;opacity:.85}
+.livebadge::before{content:"";width:.6rem;height:.6rem;border-radius:50%;background:#ccc;display:block}
+.livebadge.on{color:var(--sd-green)} .livebadge.on::before{background:var(--sd-green);box-shadow:0 0 0 .25rem rgba(14,154,78,.2)}
+.flash{position:fixed;left:50%;bottom:4.5rem;transform:translateX(-50%);background:var(--charcoal);color:#fff;padding:.6rem 1.1rem;border-radius:2rem;font-size:.95rem;z-index:60;opacity:0;transition:opacity .25s}
+.flash.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="bg"><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div><div class="blob d"></div></div>
+
+<div class="top">
+  <img id="wordmark" alt="Cappfinity">
+  <div class="crumb" id="crumb"></div>
+</div>
+<div class="livebadge" id="livebadge">Live voting offline</div>
+<div id="stage"></div>
+<div class="dots" id="dots"></div>
+<div class="foot">ISE Early Talent Intelligence Summit <span>·</span> November 2026</div>
+<div class="nav" id="nav"><button id="resetbtn" title="Reset / clear results">&#8635;</button><button id="prevbtn" title="Back (←)">&#8592;</button><span id="navlbl"></span><button id="nextbtn" title="Next (→)">&#8594;</button></div>
+
+<button id="hosttab" title="Host panel (H)"></button>
+<aside id="host">
+  <h4>Host panel <span style="float:right;color:#666">press H to hide</span></h4>
+  <div id="hostsecs"></div>
+  <h4>Cues</h4>
+  <div class="notes" id="hostnotes"></div>
+  <h4>Controls</h4>
+  <div id="hostctl"></div>
+  <h4>Keys</h4>
+  <div class="keys">
+    <kbd>→</kbd> / <kbd>Space</kbd> next build · <kbd>←</kbd> back · <kbd>PgDn</kbd>/<kbd>PgUp</kbd> next/prev section<br>
+    <kbd>1</kbd>–<kbd>4</kbd> add a vote on poll screens · <kbd>Backspace</kbd> undo last vote<br>
+    <kbd>T</kbd> start/stop timer · <kbd>R</kbd> reset timer · <kbd>F</kbd> fullscreen · <kbd>H</kbd> this panel
+  </div>
+</aside>
+<div class="resetmenu" id="resetmenu">
+  <button data-act="screen">Reset this screen<small>Clears the counts on the screen you're on</small></button>
+  <button data-act="all" class="danger">Clear everything &amp; restart<small>All polls, votes, picks and dials – back to the welcome screen</small></button>
+  <button data-act="cancel">Cancel</button>
+</div>
+<div class="flash" id="flash"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+/* ============================================================
+   CONTENT – everything a host might want to edit lives here
+   ============================================================ */
+const PEOPLE = {
+  chair:{ini:"HD", name:"Helen Dovey", org:"Cappfinity", role:"Chief Assessment Officer", lens:"Chair"},
+  john:{ini:"JB", name:"John Byrne", org:"Manchester Metropolitan University", role:"Undergraduate Lead & Programme Leader, BA (Hons) Business Management", lens:"The university perspective"},
+  helen:{ini:"HC", name:"Helen Chesney", org:"Ipsos UK", role:"Director of Learning, Skills & Talent Management", lens:"The organisation perspective"},
+};
+
+const FIVE_QUESTIONS = [
+  "What data do you typically receive at point of hire about your successful cohort?",
+  "What other data points could you be gathering about skills to set this cohort up for success?",
+  "What does skills insight after hiring change about onboarding and development?",
+  "Are the skills you want to hire for actually in the population you recruit from?",
+  "Where there's a gap, is it a development need or an opportunity gap – and what different actions might that lead to?",
+];
+
+__POLLCFG__
+
+const ANALYSIS_EXAMPLE = {
+  name:"Analysis",
+  text:"People strong in Analysis find much satisfaction in systematically analysing everything. They love to interpret problems, numbers and intricate information in detail to come up with the best possible solution or critical decision.",
+};
+
+// Cappfinity global data, 2026 (from the ISE deck)
+const WANTED = [["Collaboration",73],["Personal Responsibility",65],["Adaptable",58],["Resilience",53],["Critical Reasoning",48],["Growth",47],["Drive",42],["Numerical Reasoning",38],["Curiosity",38],["Analysis",34],["Explainer",30],["Credibility",24],["Diagrammatic Reasoning",22],["Learning Agility",22],["Motivation in Context",21]];
+const FEEDBACK = [["Adaptable",15.4],["Collaboration",12.2],["Personal Responsibility",11.9],["Drive",8.9],["Learning Agility",5.4],["Analysis",4.7],["Curiosity",4.7],["Diagrammatic Reasoning",4.4],["Resilience",3.7],["Critical Reasoning",2.2],["Growth",2.2],["Technology Focus",2.2],["Relationship Deepener",1.9],["Initiative",1.5],["Moral Compass",1.4]];
+
+// Demo cohort patterns – illustrative. Swap for ThoughtSpot stills if preferred.
+const PATTERNS = [
+  {skill:"Curiosity", kind:"l", title:"A cluster of unrealised strengths", text:"Most of this cohort perform well at it and find it energising – but they're barely getting to use it.", stat:["11 of 14","unrealised strength"], ask:"Is that a development need, or an opportunity gap?"},
+  {skill:"Resilience", kind:"r", title:"A cluster of weaknesses", text:"Most of this cohort find it hard and draining. It's also one of the four skills more than half of employers say they're hiring for.", stat:["9 of 14","weakness"], ask:"Is that a development need, or an opportunity gap?"},
+];
+const COHORT_SKILLS = ["Collaboration","Curiosity","Adaptable","Analysis","Resilience","Drive"];
+
+const JOHN_QS = [
+  "What advice would you give recruiters and talent developers on recruiting well – and strengthening onboarding and development?",
+  "What difference has having behavioural skills insight made to the students you're preparing for employment?",
+];
+const HELEN_QS = [
+  "How are recruitment, skills and development linked in your organisation?",
+  "What has understanding the skills of your hires taught you? Is it changing how you develop emerging talent?",
+  "Have you targeted unrealised strengths over weaknesses? Where has changing the work beaten extra training?",
+  "Which metrics tell you whether the investment in skills is working?",
+];
+const BOTH_QS = [
+  "What surprised you most once you had access to this level of skills data?",
+  "What's next for each of you on your skills intelligence journey?",
+];
+
+const TAKEAWAYS = [
+  "Is this a skills gap – or an opportunity gap?",
+  "Which data sources are we not yet connecting?",
+  "How do we measure early contribution, not just programme completion?",
+  "Where would changing the work deliver more than another course?",
+];
+const ENERGISERS = [
+  {t:"What do graduates need to develop most in 2027?", a:"Adaptability", b:"Change agent"},
+  {t:"Top critical skill for the 2027 workforce", a:"Collaboration", b:"Critical reasoning"},
+  {t:"What matters more", a:"AI proficiency", b:"Cognitive ability"},
+];
+const LIBRARY_URL = "https://cappfinity-demo.talent-insights.cappfinitytest.io/skills-library/#/en-GB"; // live Cappfinity Skills Library
+const SD_URL = "https://cappfinity.com"; // replace with the Skills Discovery access link; regenerate the QR
+
+__LIBRARY__
+/* ============================================================ */
+const WORDMARK = "data:image/png;base64,__WORDMARK__";
+const QR_SVG = `__QR__`;
+const LOCKUP_SVG = `__LOCKUP__`;
+const SD_SVG = `__SDMARK__`;
+const QRVOTE_SVG = `__QRVOTE__`;
+
+const S = { // live state
+  i:0, step:0,
+  warm:[0,0,0,0], warmHist:[],
+  top5:Object.fromEntries(TOP20.map(k=>[k,0])), top5Hist:[],
+  decide:[[0,0],[0,0]], decideHist:[[],[]],
+  dial:{p:null,e:null,u:null},
+  picks:[null,null,null],
+  skill:null, fam:null, tab:"At its best",
+  live:{warm:{}, top5:{}, decide1:{}, decide2:{}}, liveOn:false, phones:0,
+  timer:{left:120, run:false, id:null, len:120},
+};
+
+const $ = (s,el=document)=>el.querySelector(s);
+const h = (tag,cls,html)=>{const e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e;};
+const pct=(n,t)=>t?Math.round(n/t*100):0;
+/* combined counts = live phone votes + host adjustments (host layer may go negative to correct) */
+const nz=n=>Math.max(0,n|0);
+const warmCounts=()=>S.warm.map((v,i)=>nz(v+(S.live.warm[String(i)]||0)));
+const top5Counts=()=>Object.fromEntries(TOP20.map(k=>[k,nz((S.top5[k]||0)+(S.live.top5[k]||0))]));
+const decideCounts=()=>[["a","b"].map((o,oi)=>nz(S.decide[0][oi]+(S.live.decide1[o]||0))),["a","b"].map((o,oi)=>nz(S.decide[1][oi]+(S.live.decide2[o]||0)))];
+const stepper=(n,onchange,cls="")=>{ const w=h("span","step "+cls,`<button data-d="-1" title="Take one off">−</button><b>${n}</b><button data-d="1" title="Add one">+</button>`); w.querySelectorAll("button").forEach(b=>b.onclick=e=>{e.stopPropagation(); onchange(+b.dataset.d);}); w.onclick=e=>e.stopPropagation(); return w; };
+const ini=p=>`<div class="avatar"><span>${p.ini}</span></div>`;
+
+/* ---------- sections ---------- */
+const SECTIONS = [
+{ id:"arrive", label:"Welcome", steps:2, quiet:false,
+  notes:["Introduce yourself and Cappfinity.","John: role + one line on what students bring into organisations.","Helen C: role + one line on Ipsos early talent programme and how they use data.","Build 1: frame it as a 'data over time' story – university → recruiter → talent manager."],
+  render(){
+    const el=h("div","arrive");
+    el.innerHTML=`<div>
+      <div class="kicker g">Panel session</div>
+      <h1>How skills intelligence can improve early‑talent recruitment and development</h1>
+      <div class="sub">What early talent data reveals about capability and opportunity.</div>
+      <div class="meta"><i></i>45 minutes · interactive · bring your table's skills dictionary</div>
+    </div>
+    <div class="people">
+      ${person(PEOPLE.chair,"Chair")}
+      ${person(PEOPLE.john)}
+      ${person(PEOPLE.helen)}
+    </div>
+    <div class="journey" data-step="1">
+      <div class="jk"><span class="kicker g" style="margin:0">One story, told over time</span><p>We're going to follow the same skills data as it travels – and ask what each hand-off actually changes.</p></div>
+      <div class="jsteps">
+        <div class="jstep"><i>1</i><b>University</b><span>What students bring in – and what they're prepared for.</span></div>
+        <div class="jarrow"></div>
+        <div class="jstep"><i>2</i><b>Recruiter</b><span>What gets measured at hire – and what gets passed on.</span></div>
+        <div class="jarrow"></div>
+        <div class="jstep"><i>3</i><b>Talent manager</b><span>What the insight changes about onboarding and development.</span></div>
+      </div>
+    </div>`;
+    return el;
+  }},
+{ id:"problem", label:"The problem", steps:8,
+  notes:["State the problem: skills intelligence gets collected, sits in separate systems, never becomes action. The 'so what?'.","Build the five questions one at a time (→).","Last build: point out the skills dictionary on every table – the top 20."],
+  render(step){
+    const el=h("div","problem");
+    const left=h("div");
+    left.innerHTML=`<div class="kicker">The so what</div>
+      <div class="statement">Extensive skills intelligence can be collected for early talent. Then it <em>sits in separate systems</em> and never turns into a tangible action.</div>
+      <div class="sowhat" data-step="1">So what?</div>`;
+    const right=h("div","qs");
+    const rk=h("div","kicker","Today we need your input on five questions"); rk.dataset.step=2; right.appendChild(rk);
+    FIVE_QUESTIONS.forEach((q,i)=>{const d=h("div","q",`<span class="n">${i+1}</span><span>${q}</span>`); d.dataset.step=i+2; right.appendChild(d);});
+    const n=h("div","note",`<b>On your table:</b> the Work Ready Skills dictionary – 20 skills. You'll need it in a few minutes.`); n.dataset.step=7; right.appendChild(n);
+    el.append(left,right); return el;
+  }},
+{ id:"warm", label:"Warm-up poll", steps:1, poll:"warm",
+  notes:["Two minutes. Keys 1–4 add votes as hands go up, or type Slido totals in the panel.","Note the result – we come back to it in 'You decide'."],
+  render(){
+    const el=h("div","poll");
+    el.innerHTML=`<div><div class="kicker g">Warm-up</div><h2>${WARMUP.q}</h2><div class="hint">Scan the code and tap your answer – one each.</div><div class="qrslot"></div></div><div><div class="bars" id="warmbars"></div><div class="total" id="warmtotal"></div></div>`;
+    el.querySelector(".qrslot").appendChild(qrCard());
+    setTimeout(drawWarm,30); return el;
+  }},
+{ id:"eighty", label:"80 skills", steps:3,
+  notes:["Cappfinity taxonomy: 80 behavioural skills in five families, alongside cognitive and technical.","The 'Open the live Skills Library' button opens the dynamic library in a new tab (the SHARE link in the running order).","Click any tile to put its definition on screen; click a family to filter.","Build 1: the evidence. Build 2: Analysis – your worked example (selects it for you)."],
+  render(step){
+    const el=h("div","eighty"); el.id="eightywrap"; setTimeout(()=>drawEighty(step),30); return el;
+  },
+  onStep(el,step){ if(step===2) S.skill="Analysis"; drawEighty(step); }
+},
+{ id:"top5", label:"Your top 5 for 2027", steps:3, poll:"top5",
+  notes:["Tables have 3 minutes (T starts the clock). Agree your top 5 skills for 2027 from the dictionary.","Click a tile for each table that names it (or use the panel).","Build 1 reveals the room's top 5. Build 2: ask John & Helen."],
+  render(step){
+    const el=h("div","top5");
+    el.innerHTML=`<div class="head"><div><div class="kicker g">Table activity · Work Ready Skills</div><h2>Your top 5 skills for 2027</h2></div><div class="headr"><div class="qrslot mini"></div><div class="timer" id="t5timer">3:00</div></div></div><div id="t5body"></div>`;
+    el.querySelector(".qrslot").appendChild(qrCard());
+    setTimeout(()=>drawTop5(step),30); return el;
+  },
+  onStep(el,step){ drawTop5(step); }
+},
+{ id:"data", label:"The room vs the data", steps:4,
+  notes:["'This could be a very quick segment if we're all aligned…'","Build 0: what employers want (★ marks the room's top 5). Build 1: what candidates get feedback on.","Build 2: the overlap. Build 3: 'is there more data we can use to unpick this?'"],
+  render(step){ const el=h("div","chartwrap"); el.id="datawrap"; setTimeout(()=>drawData(step),30); return el; },
+  onStep(el,step){ drawData(step); }
+},
+{ id:"sd", label:"Skills Discovery", steps:7, poll:"decide",
+  notes:["Build 0: the three dimensions. Click the dials – Performance, then Energy, then Opportunity – and the outcome resolves.","Build 1: the four outcomes. Builds 2–3: two demo-cohort patterns.","Build 4: the vote (keys 1/2 – first pattern; 3/4 – second). Build 5: key message + warm-up callback."],
+  render(step){ const el=h("div","sd"); el.id="sdwrap"; setTimeout(()=>drawSD(step),30); return el; },
+  onStep(el,step){ drawSD(step); }
+},
+{ id:"panel", label:"The panel", steps:3+JOHN_QS.length+HELEN_QS.length+BOTH_QS.length, quiet:true,
+  notes:["John first (7 mins), then Helen (7 mins), then the two linked questions.","John's 'What am I missing?' – press T for the two-minute clock.","Helen: 'You're now speaking on behalf of every UK organisation. No pressure!'"],
+  render(step){ const el=h("div","panel"); el.id="panelwrap"; setTimeout(()=>drawPanel(step),30); return el; },
+  onStep(el,step){ drawPanel(step); }
+},
+{ id:"conc", label:"The room's conclusion", steps:5,
+  notes:["Ask the room: what else should we have said?","Then build the four questions to take back, one at a time."],
+  render(step){
+    const el=h("div","conc");
+    el.innerHTML=`<div><div class="kicker g">Before we close</div><h2>When you think about getting ready to use skills in recruitment and development – what else should we have said?</h2></div>`;
+    const g=h("div","tks");
+    TAKEAWAYS.forEach((t,i)=>{const d=h("div","tk",`<span class="n">${i+1}</span><span>${t}</span>`); d.dataset.step=i+1; g.appendChild(d);});
+    el.appendChild(g); return el;
+  }},
+{ id:"close", label:"Close", steps:2,
+  notes:["Energiser: panellists pick a side – click to light it up.","Build 1: 'Do the next right thing.' QR for Skills Discovery access. Thank the panel and the room."],
+  render(step){ const el=h("div"); el.id="closewrap"; el.style.height="100%"; setTimeout(()=>drawClose(step),30); return el; },
+  onStep(el,step){ drawClose(step); }
+},
+{ id:"end", label:"Thank you", steps:1, quiet:false,
+  notes:["Leave this up as people leave."],
+  render(){ const el=h("div","endscreen"); el.innerHTML=`<div class="lockup">${LOCKUP_SVG}</div>`; return el; }
+},
+];
+
+function person(p,tag){ return `<div class="person ${tag?'chair':''}">${ini(p)}<div><div class="name">${p.name}</div><div class="role">${p.org} · ${p.role}</div></div>${tag?`<span class="tag">${tag}</span>`:""}</div>`; }
+
+/* ---------- warm-up poll ---------- */
+function drawWarm(){
+  const wrap=$("#warmbars"); if(!wrap) return;
+  const W=warmCounts(); const t=W.reduce((a,b)=>a+b,0), max=Math.max(...W,1);
+  wrap.innerHTML="";
+  W.forEach((v,i)=>{
+    const lead = v===max && v>0;
+    const b=h("div","bar"+(lead?" lead":""),`<span class="k">${i+1}</span><span class="lbl2">${WARMUP.options[i]}</span><div class="track"><div class="fill" style="width:${t?Math.max(v/max*100, v?4:0):0}%"></div></div><div class="v">${pct(v,t)}%<small>${v} ${v===1?'vote':'votes'}</small></div>`);
+    b.appendChild(stepper(v,d=>{ if(d<0&&v<=0) return; S.warm[i]+=d; if(d>0) S.warmHist.push(i); redraw(); }));
+    b.onclick=()=>{ S.warm[i]++; S.warmHist.push(i); flash(WARMUP.options[i]+" +1"); redraw(); };
+    wrap.appendChild(b);
+  });
+  $("#warmtotal").textContent = t? `${t} ${t===1?"response":"responses"}${S.liveOn?" · live from the room":""} · click a row or press 1–4 to add, − to correct`:(S.liveOn?"Waiting for the room… scan the code to vote":"Waiting for hands… click a row or press 1–4 as hands go up");
+}
+
+/* ---------- 80 skills ---------- */
+function drawEighty(step){
+  const el=$("#eightywrap"); if(!el) return; el.innerHTML="";
+  const left=h("div","eleft");
+  if(step===0){
+    if(S.skill) left.innerHTML=`<div class="kicker">The Cappfinity skills taxonomy</div><div class="bigrow"><span class="bignum" style="font-size:5.5rem">80</span><span>behavioural skills<br><small>in five families</small></span></div><a class="liblink" href="${LIBRARY_URL}" target="_blank" rel="noopener">Open the live Skills Library <span>↗</span></a>`;
+    else left.innerHTML=`<div class="kicker">The Cappfinity skills taxonomy</div><div class="bignum">80</div><h3 style="font-size:2.2rem;margin-top:.6rem">behavioural skills</h3>
+      <div class="types"><span class="chip on">Behavioural · 80</span><span class="chip">Cognitive</span><span class="chip">Technical</span></div>
+      <p class="lead" style="margin-top:1.6rem;max-width:34rem;font-size:1.3rem">Durable skills that give emerging talent a foundation for everything that comes after – which is why we hire for them first.</p>
+      <a class="liblink" href="${LIBRARY_URL}" target="_blank" rel="noopener">Open the live Skills Library <span>↗</span></a>`;
+  } else if(step===1){
+    left.innerHTML=`<div class="kicker">A robust, scientific, externally audited taxonomy</div>`;
+    const ev=h("div","evidence");
+    [["20 yrs","of global skills measurement behind every definition"],["Linked","to real performance data"],["Bias-free","by design and by evidence"],["No","gender differences in results"]].forEach(([b,t])=>ev.appendChild(h("div","ev",`<div class="big">${b}</div><div class="t">${t}</div>`)));
+    left.appendChild(ev);
+  } else {
+    left.innerHTML=`<div class="kicker">A worked example</div>`;
+  }
+  // selected skill card
+  const sel=LIBRARY_FULL.find(x=>x.n===S.skill);
+  const card=h("div","card dark skillcard");
+  if(sel){
+    const col=famCol(sel.f), txtcol = col==='#262626' ? '#c8c8d2' : col;
+    const secs=sel.sec; const cur=secs.find(x=>x[0]===S.tab)||secs[0];
+    card.innerHTML=`<div class="sk-head"><div class="ic" style="background:${col}"><div>${sel.n[0]}</div></div><div><div class="fam" style="color:${txtcol}">${sel.f||"Behavioural skill"}</div><h3>${sel.n}</h3></div></div>
+      <p class="sk-def">${sel.x}</p>
+      <div class="sk-tabs">${secs.map(x=>`<button class="sk-tab ${x[0]===cur[0]?'on':''}" data-t="${x[0]}">${x[0]}</button>`).join("")}</div>
+      <ul class="sk-list">${cur[1].slice(0,4).map(t=>`<li>${t}</li>`).join("")}</ul>
+      ${sel.n==="Analysis"&&step===2?'<span class="fav">Helen\'s favourite</span>':''}`;
+    card.querySelectorAll(".sk-tab").forEach(b=>b.onclick=()=>{S.tab=b.dataset.t; drawEighty(step);});
+  } else card.innerHTML=`<div class="sk-head"><div class="ic"><div>?</div></div><div><h3 style="font-size:1.6rem">Pick a skill</h3></div></div><p class="sk-def">Click any tile to put its definition on screen – what it looks like at its best, the hidden risks, and how to develop it.</p>`;
+  left.appendChild(card);
+  const right=h("div","eright");
+  const fams=h("div","fams");
+  const famBtn=(name,col)=>{ const b=h("button","fchip"+(S.fam===name?" on":""),`<i style="background:${col}"></i>${name}`); b.onclick=()=>{S.fam=S.fam===name?null:name; drawEighty(step);}; return b; };
+  fams.appendChild(famBtn(null,"linear-gradient(45deg,#487BFA,#9275FA,#FB6CF5,#FDB601)")); fams.lastChild.lastChild.nodeValue="All"; fams.lastChild.innerHTML=fams.lastChild.innerHTML.replace("null","All");
+  Object.entries(FAMILIES).forEach(([f,c])=>fams.appendChild(famBtn(f,c)));
+  const grid=h("div","sgrid"+(S.gridShown?" still":"")); S.gridShown=true;
+  LIBRARY.forEach((sk,i)=>{ const dim=S.fam&&S.fam!==sk[1]; const t=h("button","stile"+(S.skill===sk[0]?" on":"")+(dim?" dim":""),`<span>${sk[0]}</span>`); t.style.setProperty("--fc",famCol(sk[1])); t.style.animationDelay=(i*12)+"ms"; t.onclick=()=>{S.skill=sk[0]; drawEighty(step);}; grid.appendChild(t); });
+  right.append(fams,grid); el.append(left,right);
+}
+
+/* ---------- top 5 ---------- */
+function drawTop5(step){
+  const body=$("#t5body"); if(!body) return;
+  body.innerHTML="";
+  const T=top5Counts(); const ranked=Object.entries(T).sort((a,b)=>b[1]-a[1]);
+  const top=ranked.filter(([,v])=>v>0).slice(0,5).map(([k])=>k);
+  if(step===0){
+    const g=h("div","tiles"); const max=Math.max(...Object.values(T),1);
+    TOP20.forEach(k=>{const v=T[k]; const t=h("div","tile"+(v?" has":""),`<div><div class="nm">${k}</div><div class="df">${WR_DEF[k]||""}</div></div><div class="ct"><span class="ctl">${v?(v===1?"1 table":v+" tables"):"<span style='font-weight:500'>tap to count</span>"}</span></div><div class="meter" style="width:${v/max*100}%"></div>`); t.setAttribute("role","button"); const ct=$(".ct",t); ct.appendChild(stepper(v,d=>{ if(d<0&&v<=0) return; S.top5[k]+=d; if(d>0) S.top5Hist.push(k); drawTop5(0); flash(k+(d>0?" +1":" −1")); })); t.onclick=()=>{S.top5[k]++;S.top5Hist.push(k);drawTop5(0);flash(k+" +1");}; g.appendChild(t);});
+    body.appendChild(g);
+  } else if(step===1){
+    const p=h("div","podium");
+    if(!top.length){ p.innerHTML=`<div class="lead" style="grid-column:1/-1">No votes counted yet – go back a step and tap the tiles.</div>`; }
+    top.forEach((k,i)=>{const d=h("div","pod",`<div class="rank">${i+1}</div><div class="nm">${k}</div><div class="ct">${T[k]} ${T[k]===1?'table':'tables'}</div>`); d.style.animationDelay=(i*120)+"ms"; d.style.minHeight=(100-i*9)+"%"; p.appendChild(d);});
+    body.appendChild(p);
+  } else {
+    const wrap=h("div"); wrap.style.display="grid"; wrap.style.gap="1.6rem"; wrap.style.alignContent="center"; wrap.style.height="100%";
+    const strip=h("div","top5strip",`<div class="kicker g" style="margin:0 0 1rem">The room's top 5</div><div class="t5row">${top.map((k,i)=>`<div class="t5chip"><b>${i+1}</b><span>${k}</span></div>`).join("")}</div>`);
+    const pr=h("div","prompts",`<div class="prompt"><span class="who">To John & Helen</span>Any surprises in these results?</div><div class="prompt"><span class="who">To John</span>Which skills does MMU prepare students for – and how does that compare with the room's top 5?</div>`);
+    wrap.append(strip,pr); body.appendChild(wrap);
+  }
+}
+
+/* ---------- data charts ---------- */
+function drawData(step){
+  const el=$("#datawrap"); if(!el) return; el.innerHTML="";
+  const roomTop=Object.entries(top5Counts()).sort((a,b)=>b[1]-a[1]).filter(([,v])=>v>0).slice(0,5).map(([k])=>k);
+  const bars=(rows,cls,unit,hot,axisMax,ticks)=>{ const g=h("div","hbars "+cls); rows.forEach(([n,v],i)=>{ const d=h("div","hb"+(i<hot?" hot":"")+(roomTop.includes(n)?" room":""),`<span class="n">${n}</span><div class="tr">${ticks.map(t=>`<i class="tick" style="left:${t/axisMax*100}%"></i>`).join("")}<div class="f" data-w="${v/axisMax*100}"></div></div><span class="v">${v}${unit}</span>`); g.appendChild(d);}); const ax=h("div","hb axis",`<span></span><div class="axl">${ticks.map(t=>`<span style="left:${t/axisMax*100}%">${t}%</span>`).join("")}</div><span></span>`); g.appendChild(ax); setTimeout(()=>g.querySelectorAll(".f").forEach(f=>f.style.width=f.dataset.w+"%"),60); return g; };
+  if(step===0){
+    el.innerHTML=`<div><div class="kicker">Cappfinity global data · 2026</div><h2>What are the top skills employers are looking for?</h2></div>`;
+    el.appendChild(bars(WANTED,"",`%`,4,100,[0,25,50,75,100]));
+    el.appendChild(h("div","legend",`<span><i style="background:var(--g-energy)"></i>Wanted by more than half of employers</span><span><i style="background:linear-gradient(90deg,var(--blue),var(--violet))"></i>% of employer frameworks that include the skill · scale 0–100%</span>${roomTop.length?`<span><span class="gold">★</span> this room's top 5</span>`:""}`));
+  } else if(step===1){
+    el.innerHTML=`<div><div class="kicker">Cappfinity global data · 2026</div><h2>What are the bottom skills candidates receive feedback on?</h2></div>`;
+    el.appendChild(bars(FEEDBACK,"red",`%`,0,20,[0,5,10,15,20]));
+    el.appendChild(h("div","legend",`<span><i style="background:linear-gradient(90deg,var(--pink),var(--violet))"></i>Share of all development feedback given to candidates · scale 0–20%</span>${roomTop.length?`<span><span class="gold">★</span> this room's top 5</span>`:""}`));
+  } else if(step===2){
+    el.innerHTML=`<div><div class="kicker">Put them side by side</div><h2>What we want most is what new hires most often need to develop.</h2></div>`;
+    el.appendChild(slope());
+    el.appendChild(h("div","takeaway",`Organisations are clear and consistent about what they want. <em>The same skills top the development list.</em>`));
+  } else {
+    el.style.alignContent="center";
+    el.innerHTML=`<div style="align-self:center;text-align:center;grid-row:1/-1"><div class="kicker g">So</div><h1 style="font-size:5.4rem;max-width:80rem;margin:0 auto">Is there more data we can use to unpick this picture?</h1><p class="lead" style="margin-top:2rem">Sit tight – here's the full tool our panellists are using.</p></div>`;
+  }
+}
+function slope(){
+  const L=WANTED.slice(0,10), R=FEEDBACK.slice(0,10);
+  const both=L.map(x=>x[0]).filter(n=>R.some(r=>r[0]===n));
+  const W=1000,H=440,x1=330,x2=670,top=50,rowH=(H-top-10)/10;
+  const y=i=>top+i*rowH+rowH/2;
+  let s=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" font-size="15"><defs><linearGradient id="gfull" x1="0" x2="1"><stop offset="0" stop-color="#487BFA"/><stop offset=".5" stop-color="#9275FA"/><stop offset="1" stop-color="#FB6CF5"/></linearGradient></defs>`;
+  s+=`<text class="hd" font-size="11" x="${x1}" y="22" text-anchor="end">MOST WANTED BY EMPLOYERS</text><text class="hd" font-size="11" x="${x2}" y="22">MOST FEEDBACK GIVEN TO CANDIDATES</text>`;
+  L.forEach(([n],i)=>{ const j=R.findIndex(r=>r[0]===n); const hot=both.includes(n); if(j>=0) s+=`<line class="${hot?'h':''}" x1="${x1+14}" y1="${y(i)}" x2="${x2-14}" y2="${y(j)}"/>`; });
+  L.forEach(([n,v],i)=>{ const hot=both.includes(n); s+=`<circle class="${hot?'h':''}" cx="${x1+14}" cy="${y(i)}" r="7"/><text class="${hot?'h':''}" x="${x1-4}" y="${y(i)+5}" text-anchor="end">${i+1}. ${n} <tspan fill="#8a8a8a" font-weight="500">${v}%</tspan></text>`; });
+  R.forEach(([n,v],j)=>{ const hot=both.includes(n); s+=`<circle class="${hot?'h':''}" cx="${x2-14}" cy="${y(j)}" r="7"/><text class="${hot?'h':''}" x="${x2+4}" y="${y(j)+5}">${j+1}. ${n} <tspan fill="#8a8a8a" font-weight="500">${v}%</tspan></text>`; });
+  s+=`</svg>`;
+  const d=h("div","slope",s); return d;
+}
+
+/* ---------- skills discovery ---------- */
+const OUT={
+  g:{k:"Realised strength",sub:"Skills you use and enjoy",act:"Use wisely",col:"var(--sd-green)",sig:["Perform well","Energising","Plenty of opportunity"],do:"Build on it. Stretch it. Don't let it tip into over-use."},
+  l:{k:"Unrealised strength",sub:"Skills you use less but enjoy",act:"Use more",col:"var(--sd-lime)",sig:["Perform well","Energising","Little opportunity"],do:"Find the opportunity. Change the work so they actually get to use it."},
+  o:{k:"Learned skill",sub:"Skills you've learned but may not enjoy",act:"Use when needed",col:"var(--sd-orange)",sig:["Perform well","De-energising","Variable opportunity"],do:"Keep it in reserve. Lean on it when it matters, not all day."},
+  r:{k:"Weakness",sub:"Skills you find hard and don't enjoy",act:"Use less",col:"var(--sd-red)",sig:["Perform poorly","De-energising","Variable opportunity"],do:"Only train it if the skill is business-critical. Otherwise, design around it."},
+};
+function resolveDial(){ const {p,e,u}=S.dial; if(p==="low") return "r"; if(p==="high"&&e==="low") return "o"; if(p==="high"&&e==="high"&&u==="high") return "g"; if(p==="high"&&e==="high"&&u==="low") return "l"; return null; }
+function drawSD(step){
+  const el=$("#sdwrap"); if(!el) return; el.innerHTML="";
+  if(step===0){
+    el.innerHTML=`<div><div class="kicker">How Skills Discovery works</div><h2>80 behavioural skills. Three dimensions. Four outcomes.</h2></div>`;
+    const d=h("div","dims");
+    const dim=(key,ic,name,sub,opts,enabled)=>{ const w=h("div","dim"+(enabled?"":" off")); w.innerHTML=`<div class="dh"><div class="ic">${ic}</div><div><b>${name}</b><small>${sub}</small></div></div>`; opts.forEach(([val,lab,ghost])=>{ const b=h("button","opt"+(S.dial[key]===val?" on":"")+(ghost?" ghost":""),`<span>${lab}</span><span>${S.dial[key]===val?"●":""}</span>`); b.onclick=()=>{ S.dial[key]=val; if(key==="p"){S.dial.e=null;S.dial.u=null; if(val==="low"){S.dial.e="low";}} if(key==="e"){S.dial.u=null;} drawSD(0); }; w.appendChild(b); }); return w; };
+    d.appendChild(dim("p","P","Performance","How well do they do it?",[["high","Perform well"],["low","Perform poorly"]],true));
+    d.appendChild(dim("e","E","Energy","Does it energise them?",[["high","Energising"],["low","De-energising"]],S.dial.p==="high"));
+    d.appendChild(dim("u","O","Opportunity","How much chance do they get to use it?",[["high","Plenty of opportunity"],["low","Little opportunity"]],S.dial.p==="high"&&S.dial.e==="high"));
+    const r=resolveDial(); const o=h("div","outcome"+(r?"":" wait"));
+    if(r){ const O=OUT[r]; o.style.background=O.col; o.innerHTML=`<div><div class="k">Outcome</div><h3>${O.k}</h3><p>${O.sub}</p><div class="do">${O.do}</div></div><span class="act">${O.act}</span>`; }
+    else o.innerHTML=`<div><div class="k">Outcome</div><h3>?</h3><p>Pick a reading on each dimension and watch it resolve.</p></div><span class="act" style="opacity:.5">Waiting</span>`;
+    d.appendChild(o); el.appendChild(d);
+  } else if(step===1){
+    el.innerHTML=`<div><div class="kicker">The data Skills Discovery gives</div><h2>Four outcomes – and four very different actions.</h2></div>`;
+    const g=h("div","four");
+    [["g","g"],["l","l"],["o","o"],["r","r"]].forEach(([k])=>{ const O=OUT[k]; g.appendChild(h("div","oc "+k,`<div class="hd"><b>${O.k}</b><span>${O.sub}</span></div><div class="band">${O.act}</div><div class="sig">${O.sig.map(s=>`<span>${s}</span>`).join("")}</div><div class="do">${O.do}</div>`)); });
+    el.appendChild(g);
+  } else if(step===2||step===3){
+    const P=PATTERNS[step-2];
+    el.innerHTML=`<div><div class="kicker">Demo cohort · 14 new hires · illustrative data</div><h2>Two patterns from one cohort</h2></div>`;
+    const w=h("div","pattern"); const heat=h("div","heat");
+    heat.appendChild(h("div")); for(let i=1;i<=14;i++) heat.appendChild(h("div","ch","P"+i));
+    COHORT_SKILLS.forEach((sk,ri)=>{ const hi=sk===P.skill; heat.appendChild(h("div","rl"+(hi?" h":""),sk)); const row=cohortRow(sk,P); row.forEach(c=>{ const d=h("div","c "+c); if(hi) d.classList.add("hot"); else d.style.opacity=".28"; if(hi){d.style.boxShadow="0 0 0 2px #fff,0 0 0 3px "+OUT[P.kind].col;} heat.appendChild(d);}); });
+    const left=h("div"); left.appendChild(heat); left.appendChild(h("div","pkey",`<span><i style="background:var(--sd-green)"></i>Realised strength</span><span><i style="background:var(--sd-lime)"></i>Unrealised strength</span><span><i style="background:var(--sd-orange)"></i>Learned skill</span><span><i style="background:var(--sd-red)"></i>Weakness</span>`));
+    const right=h("div","pside",`<div class="kicker" style="color:${OUT[P.kind].col}">Pattern ${step-1} · ${P.skill}</div><h3>${P.title}</h3><p>${P.text}</p><div class="stat"><div><b>${P.stat[0]}</b><span>${P.stat[1]}</span></div></div>`);
+    w.append(left,right); el.appendChild(w);
+  } else if(step===4){
+    el.innerHTML=`<div class="sdhead"><div><div class="kicker g">You decide</div><h2>Development need – or opportunity gap? What would you do?</h2></div><div class="qrslot mini"></div></div>`;
+    el.querySelector(".qrslot").appendChild(qrCard());
+    const g=h("div","decide");
+    const DC=decideCounts();
+    PATTERNS.forEach((P,pi)=>{ const v=DC[pi], t=v[0]+v[1]; const card=h("div","card",""); card.style.display="grid"; card.style.gridTemplateRows="auto 1fr"; card.style.gap="1.2rem"; card.style.padding="1.6rem";
+      card.innerHTML=`<div><span class="kicker" style="color:${OUT[P.kind].col};margin:0">Pattern ${pi+1} · ${P.skill}</span><div style="font-size:1.15rem;color:var(--ink2);margin-top:.3rem">${P.title}</div></div>`;
+      const row=h("div"); row.style.display="grid"; row.style.gridTemplateColumns="1fr 1fr"; row.style.gap="1rem";
+      [["a","Development need","Train it.",pi*2+1],["b","Opportunity gap","Change the work.",pi*2+2]].forEach(([c,t1,t2,key],oi)=>{ const b=h("button","dc "+c,`<div><span class="k">${key}</span><h3>${t1}</h3><p>${t2}</p></div><div class="big">${pct(v[oi],t)}%<small>${v[oi]} ${v[oi]===1?'vote':'votes'}</small></div><div class="fillbar"><i style="width:${pct(v[oi],t)}%"></i></div>`); b.onclick=()=>{S.decide[pi][oi]++;S.decideHist[pi].push(oi);drawSD(4);}; b.querySelector(".big").appendChild(stepper(v[oi],d=>{ if(d<0&&v[oi]<=0) return; S.decide[pi][oi]+=d; if(d>0) S.decideHist[pi].push(oi); drawSD(4); })); row.appendChild(b); });
+      card.appendChild(row); g.appendChild(card); });
+    el.appendChild(g);
+  } else if(step===5){
+    el.innerHTML=`<div><div class="kicker">The key message</div><h2>Not every gap is a training gap.</h2></div>`;
+    const g=h("div","msg");
+    g.appendChild(h("div","card",`<div class="kicker" style="color:var(--sd-lime)">Unrealised strengths</div>Point to high performance that's <b>lacking opportunity</b>. The fix is usually the work, not a course.`));
+    g.appendChild(h("div","card",`<div class="kicker" style="color:var(--sd-red)">Weaknesses</div>Fixing them is hard work. Training is only worth it where the skill is <b>business-critical</b>.`));
+    const W=warmCounts(); const t=W.reduce((a,b)=>a+b,0); const p=pct(W[0],t);
+    if(t) g.appendChild(h("div","card dark callback",`<div class="pct">${p}%</div><div class="t">of you said <em style="font-style:normal" class="gold">training</em> first.<small>${W[0]} of ${t} in the warm-up poll · Is that always the answer?</small></div>`));
+    else g.appendChild(h("div","card dark callback",`<div class="pct" style="font-size:3.2rem">Most</div><div class="t">of you said <em style="font-style:normal" class="gold">training</em> first.<small>No warm-up result recorded – go back to section 3 to tally it, and this line updates itself.</small></div>`));
+    el.appendChild(g);
+  } else {
+    el.style.alignContent="center";
+    el.innerHTML=`<div style="text-align:center;align-self:center;grid-row:1/-1"><div class="kicker g">Over to the panel</div><h1 style="font-size:5.4rem;max-width:76rem;margin:0 auto">So when we have insight like this – what do we actually do about it?</h1></div>`;
+  }
+}
+function cohortRow(skill,P){
+  // deterministic pseudo-random per skill so the pattern is stable
+  let seed=[...skill].reduce((a,c)=>a*31+c.charCodeAt(0),7)>>>0; const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff;};
+  const pool=["g","g","l","o","r","g","o","l"];
+  const out=[]; for(let i=0;i<14;i++){ out.push(pool[Math.floor(rnd()*pool.length)]); }
+  if(skill===P.skill){ const n=parseInt(P.stat[0]); const idx=[...Array(14).keys()].sort(()=>rnd()-.5); idx.slice(0,n).forEach(i=>out[i]=P.kind); idx.slice(n).forEach(i=>{ if(out[i]===P.kind) out[i]= P.kind==="l"?"g":"o"; }); }
+  return out;
+}
+
+/* ---------- panel ---------- */
+function panelSteps(){
+  const s=[];
+  s.push({who:"john",q:null,intro:true});
+  JOHN_QS.forEach(q=>s.push({who:"john",q}));
+  s.push({who:"john",q:"You've got two minutes. What am I missing?",ask:"John asks the room",clock:true});
+  s.push({who:"helen",q:null,intro:true});
+  HELEN_QS.forEach(q=>s.push({who:"helen",q}));
+  BOTH_QS.forEach(q=>s.push({who:"both",q}));
+  return s;
+}
+function drawPanel(step){
+  const el=$("#panelwrap"); if(!el) return; el.innerHTML=""; el.classList.remove("pair");
+  const st=panelSteps()[Math.min(step,panelSteps().length-1)];
+  const card=p=>`<div class="pcard">${ini(p)}<div class="name">${p.name}</div><div class="role">${p.role}</div><span class="lens">${p.org}</span></div>`;
+  if(st.who==="both"){
+    el.classList.add("pair"); el.style.gridTemplateColumns="1fr 1fr";
+    el.innerHTML=`<div style="display:grid;gap:1.2rem">${card(PEOPLE.john)}${card(PEOPLE.helen)}</div><div class="pq"><div class="kicker g">To both</div>${st.q}</div>`;
+    return;
+  }
+  el.style.gridTemplateColumns="";
+  const p=PEOPLE[st.who];
+  let right;
+  if(st.intro){ right=`<div class="pq"><div class="kicker g">${p.lens}</div>${st.who==="helen"?"You're now speaking on behalf of every UK organisation.<br><span class='grad'>No pressure.</span>":"From the lecture theatre to the first day at work."}</div>`; }
+  else right=`<div class="pq"><div class="kicker g">${st.ask||("To "+p.name.split(" ")[0])}</div>${st.q}${st.clock?`<div class="clock" id="pclock">2:00<small>press T</small></div>`:""}</div>`;
+  el.innerHTML=card(p)+right;
+  if(st.clock){ S.timer.len=120; if(!S.timer.run) S.timer.left=120; tickRender(); }
+}
+
+/* ---------- close ---------- */
+function drawClose(step){
+  const el=$("#closewrap"); if(!el) return; el.innerHTML="";
+  if(step===0){
+    const w=h("div","energ"); w.innerHTML=`<div><div class="kicker g">Energiser</div><h2>Quick-fire. Panel – pick a side.</h2></div>`;
+    const g=h("div","vs");
+    ENERGISERS.forEach((e,i)=>{ const r=h("div","vsrow",`<div class="t">${e.t}</div>`); ["a","b"].forEach((k,ki)=>{ const b=h("button","side"+(S.picks[i]===k?" on":""),e[k]); b.onclick=()=>{S.picks[i]=S.picks[i]===k?null:k;drawClose(0);}; r.appendChild(b); if(ki===0) r.appendChild(h("div","or","or")); }); g.appendChild(r); });
+    w.appendChild(g); el.appendChild(w);
+  } else {
+    const w=h("div","close"); w.innerHTML=`<div><div class="kicker g">Thank you</div><h1>Do the next<br><span class="grad">right thing.</span></h1><p class="lead">The biggest thing to take away: strong skills intelligence should lead to tangible action. Start with one.</p><div class="thanks">Thank you to John, Helen – and to you, for being brave with what you shared.</div></div>
+    <div class="qr"><div class="sdmark">${SD_SVG}</div>${QR_SVG}<div class="u">${SD_URL.replace(/^https?:\/\//,"")}</div></div>`;
+    el.appendChild(w);
+  }
+}
+
+/* ---------- live polling (Supabase) ---------- */
+let sb=null, countsTimer=null, lastQ=null;
+function questionFor(sec,step){ if(sec.id==="warm") return "warm"; if(sec.id==="top5"&&step===0) return "top5"; if(sec.id==="sd"&&step===4) return "decide"; if(sec.id==="end") return "closed"; return "idle"; }
+async function syncQuestion(){ if(!sb) return; const q=questionFor(SECTIONS[S.i],S.step); if(q===lastQ) return; lastQ=q; try{ await sb.rpc("set_question",{q,secret:LIVE.secret}); }catch(e){} }
+async function fetchCounts(){ if(!sb) return; try{ const {data,error}=await sb.rpc("vote_counts"); if(error) throw error; const live={warm:{},top5:{},decide1:{},decide2:{}}; (data||[]).forEach(r=>{ if(live[r.question]) live[r.question][r.option]=+r.n; }); S.live=live; S.liveOn=true; redrawIfPoll(); setLiveBadge(true); }catch(e){ setLiveBadge(false); } }
+function scheduleCounts(){ clearTimeout(countsTimer); countsTimer=setTimeout(fetchCounts,150); }
+function redrawIfPoll(){ const id=SECTIONS[S.i].id; if(id==="warm"||id==="top5"||(id==="sd"&&(S.step===4||S.step===5))||id==="data") redraw(); }
+function setLiveBadge(on){ const b=$("#livebadge"); if(!b) return; b.className="livebadge"+(on?" on":""); b.textContent=on?"Live voting on":"Live voting offline"; }
+async function liveReset(q){ if(!sb) return; try{ await sb.rpc("reset_votes",{q,secret:LIVE.secret}); S.live={warm:{},top5:{},decide1:{},decide2:{}}; await fetchCounts(); }catch(e){} }
+function qrCard(){ const d=h("div","qrcard",`<div class="qrk">Scan to vote</div>${QRVOTE_SVG}<div class="qru">${LIVE.voteShort}</div>`); return d; }
+(function liveBoot(){
+  if(!window.supabase||!LIVE.url) return;
+  try{
+    sb=window.supabase.createClient(LIVE.url,LIVE.key,{realtime:{params:{eventsPerSecond:10}}});
+    fetchCounts();
+    sb.channel("votes").on("postgres_changes",{event:"*",schema:"public",table:"votes"},scheduleCounts).subscribe(st=>{ if(st==="SUBSCRIBED") fetchCounts(); });
+    setInterval(fetchCounts,5000);
+  }catch(e){ sb=null; }
+})();
+
+/* ---------- engine ---------- */
+const stage=$("#stage");
+let current=null;
+function go(i,step=0,dir=1,sync=true){
+  i=Math.max(0,Math.min(SECTIONS.length-1,i));
+  const sec=SECTIONS[i];
+  step=Math.max(0,Math.min(sec.steps-1,step));
+  const same = current && S.i===i;
+  S.i=i; S.step=step;
+  if(!same){
+    const old=current; if(old){ old.classList.remove("on"); old.classList.add("off"); setTimeout(()=>old.remove(),600); }
+    stopTimer(); S.timer.left=S.timer.len = sec.id==="top5"?180:120;
+    const sc=h("div","scene"); sc.appendChild(sec.render(step)); stage.appendChild(sc); current=sc;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>sc.classList.add("on")));
+    document.body.classList.toggle("quiet",!!sec.quiet); document.body.classList.toggle("end",sec.id==="end");
+    setTimeout(tickRender,60);
+  }
+  applySteps(); if(sec.onStep) sec.onStep(current,step);
+  $("#crumb").innerHTML=`<b>${String(i+1).padStart(2,"0")}</b>${sec.label}`;
+  if(sync) syncQuestion();
+  $("#navlbl").textContent = sec.steps>1 ? `${step+1} / ${sec.steps}` : "";
+  drawDots(); drawHost();
+  try{ localStorage.setItem("ise-state",JSON.stringify({i,step,warm:S.warm,top5:S.top5,decide:S.decide,picks:S.picks})); }catch(e){}
+}
+function applySteps(){ current.querySelectorAll("[data-step]").forEach(e=>{ const n=+e.dataset.step; e.classList.toggle("in",n<=S.step); e.classList.toggle("past",false); }); }
+function next(){ const sec=SECTIONS[S.i]; if(S.step<sec.steps-1) go(S.i,S.step+1); else go(S.i+1,0); }
+function prev(){ const sec=SECTIONS[S.i]; if(S.step>0) go(S.i,S.step-1); else if(S.i>0) go(S.i-1,SECTIONS[S.i-1].steps-1); }
+function drawDots(){ const d=$("#dots"); d.innerHTML=SECTIONS.map((s,k)=>`<i class="${k===S.i?'on':k<S.i?'done':''}" title="${s.label}"></i>`).join(""); [...d.children].forEach((c,k)=>c.onclick=()=>go(k)); }
+
+/* timer */
+function tickRender(){ const m=Math.floor(S.timer.left/60), s=S.timer.left%60; const txt=`${m}:${String(s).padStart(2,"0")}`; const t=$("#t5timer"); if(t){ t.textContent=txt; t.className="timer"+(S.timer.run?" run":"")+(S.timer.left<=30?" low":""); } const c=$("#pclock"); if(c){ c.innerHTML=txt+`<small>${S.timer.run?"running":"press T"}</small>`; c.className="clock"+(S.timer.run?" run":"")+(S.timer.left<=30?" low":""); } }
+function toggleTimer(){ if(S.timer.run){ stopTimer(); } else { S.timer.run=true; S.timer.id=setInterval(()=>{ if(S.timer.left>0) S.timer.left--; else stopTimer(); tickRender(); },1000); } tickRender(); }
+function stopTimer(){ S.timer.run=false; clearInterval(S.timer.id); tickRender(); }
+function resetTimer(){ stopTimer(); S.timer.left=S.timer.len; tickRender(); }
+
+/* host panel */
+function drawHost(){
+  $("#hostsecs").innerHTML=SECTIONS.map((s,k)=>`<button class="sec ${k===S.i?'on':''}" data-k="${k}"><i>${k+1}</i>${s.label}${k===S.i&&s.steps>1?` <span style="margin-left:auto;color:#8d8d9a">build ${S.step+1}/${s.steps}</span>`:""}</button>`).join("");
+  $("#hostsecs").querySelectorAll(".sec").forEach(b=>b.onclick=()=>go(+b.dataset.k));
+  $("#hostnotes").innerHTML="<ul>"+SECTIONS[S.i].notes.map(n=>`<li>${n}</li>`).join("")+"</ul>";
+  const c=$("#hostctl"); const sec=SECTIONS[S.i]; let html="";
+  if(sec.id==="warm"||sec.id==="sd"){ html+=`<div style="color:#8d8d9a;margin-bottom:.4rem">Warm-up: host adjustments (added to live phone votes)</div>`; WARMUP.options.forEach((o,i)=>html+=`<div class="ctl"><span>${i+1}. ${o}</span><input type="number" min="0" data-poll="warm" data-i="${i}" value="${S.warm[i]}"></div>`); html+=`<button class="btn" data-act="resetwarm">Reset warm-up</button>`; }
+  if(sec.id==="sd"){ html+=`<div style="color:#8d8d9a;margin:.8rem 0 .4rem">You decide: host adjustments (keys 1–2 pattern 1, 3–4 pattern 2)</div>`; PATTERNS.forEach((P,pi)=>["Development need","Opportunity gap"].forEach((o,oi)=>html+=`<div class="ctl"><span>${P.skill}: ${o}</span><input type="number" min="0" data-poll="decide" data-p="${pi}" data-i="${oi}" value="${S.decide[pi][oi]}"></div>`)); html+=`<button class="btn" data-act="resetdecide">Reset votes</button><button class="btn" data-act="resetdial">Reset dials</button>`; }
+  if(sec.id==="top5"){ html+=`<div style="color:#8d8d9a;margin-bottom:.4rem">Top 5: host adjustments per skill (added to phone votes)</div>`; TOP20.forEach(k=>html+=`<div class="ctl"><span>${k}</span><input type="number" min="0" data-poll="top5" data-k="${k}" value="${S.top5[k]}"></div>`); html+=`<button class="btn" data-act="resettop5">Reset</button>`; }
+  html+=`<div style="margin-top:.8rem"><button class="btn" data-act="timer">${S.timer.run?"Stop":"Start"} timer</button><button class="btn" data-act="rtimer">Reset timer</button><button class="btn" data-act="full">Fullscreen</button><button class="btn" data-act="clearall">Clear all results</button></div>`;
+  c.innerHTML=html;
+  c.querySelectorAll("input").forEach(inp=>inp.onchange=()=>{ const v=Math.max(0,parseInt(inp.value)||0); if(inp.dataset.poll==="warm") S.warm[+inp.dataset.i]=v; if(inp.dataset.poll==="decide") S.decide[+inp.dataset.p][+inp.dataset.i]=v; if(inp.dataset.poll==="top5") S.top5[inp.dataset.k]=v; redraw(); });
+  c.querySelectorAll(".btn").forEach(b=>b.onclick=()=>{ const a=b.dataset.act; if(a==="resetwarm"){S.warm=[0,0,0,0];S.warmHist=[];} if(a==="resetdecide"){S.decide=[[0,0],[0,0]];S.decideHist=[[],[]];} if(a==="resetdial"){S.dial={p:null,e:null,u:null};} if(a==="resettop5"){for(const k in S.top5)S.top5[k]=0;S.top5Hist=[];} if(a==="timer")toggleTimer(); if(a==="rtimer")resetTimer(); if(a==="full")fullscreen(); if(a==="clearall"){S.warm=[0,0,0,0];S.decide=[[0,0],[0,0]];for(const k in S.top5)S.top5[k]=0;S.picks=[null,null,null];S.dial={p:null,e:null,u:null};} redraw(); });
+}
+function redraw(){ const sec=SECTIONS[S.i]; if(sec.id==="warm") drawWarm(); if(sec.id==="top5") drawTop5(S.step); if(sec.id==="sd") drawSD(S.step); if(sec.id==="data") drawData(S.step); if(sec.id==="close") drawClose(S.step); drawHost(); try{ localStorage.setItem("ise-state",JSON.stringify({i:S.i,step:S.step,warm:S.warm,top5:S.top5,decide:S.decide,picks:S.picks})); }catch(e){} }
+function fullscreen(){ const d=document.documentElement; if(!document.fullscreenElement) (d.requestFullscreen||d.webkitRequestFullscreen).call(d); else document.exitFullscreen(); }
+let flashId; function flash(t){ const f=$("#flash"); f.textContent=t; f.classList.add("on"); clearTimeout(flashId); flashId=setTimeout(()=>f.classList.remove("on"),900); }
+
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT") return;
+  const k=e.key; const sec=SECTIONS[S.i];
+  if(k==="ArrowRight"||k===" "||k==="Enter"){ e.preventDefault(); next(); }
+  else if(k==="ArrowLeft"){ e.preventDefault(); prev(); }
+  else if(k==="PageDown"||k==="ArrowDown"){ e.preventDefault(); go(S.i+1); }
+  else if(k==="PageUp"||k==="ArrowUp"){ e.preventDefault(); go(S.i-1); }
+  else if(k==="Home"){ go(0); }
+  else if(k.toLowerCase()==="h"){ $("#host").classList.toggle("open"); }
+  else if(k.toLowerCase()==="f"){ fullscreen(); }
+  else if(k.toLowerCase()==="t"){ toggleTimer(); drawHost(); }
+  else if(k.toLowerCase()==="r"){ resetTimer(); }
+  else if(/^[1-4]$/.test(k)){
+    const n=+k-1;
+    if(sec.id==="warm"){ S.warm[n]++; S.warmHist.push(n); flash(WARMUP.options[n]+" +1"); redraw(); }
+    else if(sec.id==="sd"&&S.step===4){ const pi=n<2?0:1, oi=n%2; S.decide[pi][oi]++; S.decideHist[pi].push(oi); flash((pi?PATTERNS[1].skill:PATTERNS[0].skill)+": "+(oi?"opportunity gap":"development need")+" +1"); redraw(); }
+  }
+  else if(k==="Backspace"){
+    if(sec.id==="warm"&&S.warmHist.length){ S.warm[S.warmHist.pop()]--; flash("undo"); redraw(); }
+    else if(sec.id==="top5"&&S.top5Hist.length){ S.top5[S.top5Hist.pop()]--; flash("undo"); redraw(); }
+    else if(sec.id==="sd"&&S.step===4){ for(const pi of [1,0]) if(S.decideHist[pi].length){ S.decide[pi][S.decideHist[pi].pop()]--; flash("undo"); redraw(); break; } }
+  }
+});
+$("#hosttab").onclick=()=>$("#host").classList.toggle("open");
+$("#prevbtn").onclick=prev; $("#nextbtn").onclick=next;
+$("#resetbtn").onclick=e=>{e.stopPropagation(); $("#resetmenu").classList.toggle("open");};
+document.addEventListener("click",e=>{ if(!e.target.closest("#resetmenu,#resetbtn")) $("#resetmenu").classList.remove("open"); });
+function resetScreen(){ const id=SECTIONS[S.i].id; if(id==="warm") liveReset("warm"); if(id==="top5") liveReset("top5"); if(id==="sd") liveReset("decide"); if(id==="warm"){S.warm=[0,0,0,0];S.warmHist=[];} if(id==="top5"){for(const k in S.top5)S.top5[k]=0;S.top5Hist=[];} if(id==="sd"){S.decide=[[0,0],[0,0]];S.decideHist=[[],[]];S.dial={p:null,e:null,u:null};} if(id==="close"){S.picks=[null,null,null];} if(id==="eighty"){S.skill=null;S.fam=null;} resetTimer(); redraw(); flash("Screen reset"); }
+function resetAll(){ liveReset("all"); S.warm=[0,0,0,0];S.warmHist=[];for(const k in S.top5)S.top5[k]=0;S.top5Hist=[];S.decide=[[0,0],[0,0]];S.decideHist=[[],[]];S.dial={p:null,e:null,u:null};S.picks=[null,null,null];S.skill=null;S.fam=null; try{localStorage.removeItem("ise-state");}catch(e){} stopTimer(); current=null; stage.innerHTML=""; go(0,0); flash("Everything cleared"); }
+$("#resetmenu").querySelectorAll("button").forEach(b=>b.onclick=()=>{ $("#resetmenu").classList.remove("open"); if(b.dataset.act==="screen") resetScreen(); if(b.dataset.act==="all") resetAll(); });
+
+/* boot */
+$("#wordmark").src=WORDMARK;
+(function boot(){
+  let saved=null; try{ saved=JSON.parse(localStorage.getItem("ise-state")); }catch(e){}
+  if(saved&&location.hash!=="#fresh"){ if(saved.warm) S.warm=saved.warm; if(saved.top5) Object.assign(S.top5,saved.top5); if(saved.decide) S.decide=saved.decide; if(saved.picks) S.picks=saved.picks; }
+  const m=location.hash.match(/^#(\d+)(?:\.(\d+))?$/);
+  go(m?+m[1]-1:0, m&&m[2]?+m[2]-1:0, 1, false);   // loading the page never changes the live question
+})();
+</script>
+</body>
+</html>
