@@ -93,7 +93,7 @@ function render(){
     const sel = Array.isArray(mine.top5)?mine.top5:[];
     view.innerHTML=`<div class="kicker">Table activity</div><h1>Your table's top 5 skills for 2027</h1><p class="sub">One phone per table. Pick five from the Work Ready Skills dictionary – tap again to remove.</p><div class="count"><b>${sel.length}</b> of 5 chosen</div><div class="opts" id="opts"></div>`;
     const o=$("#opts");
-    WORK_READY.forEach(([k,d])=>{ const on=sel.includes(k); const b=document.createElement("button"); b.className="opt"+(on?" on":"")+(!on&&sel.length>=5?" dis":""); b.innerHTML=`<span class="k">${on?"✓":""}</span><span>${k}<small>${d}</small></span>`; b.onclick=async()=>{ if(!on&&sel.length>=5){ showErr("That's five already – remove one first."); return; } const r=await cast("top5",k); if(!r) return; if(r.status==="added") sel.push(k); if(r.status==="removed") sel.splice(sel.indexOf(k),1); if(r.status==="limit") showErr("That's five already."); mine.top5=sel; saveMine(); render(); }; o.appendChild(b); });
+    WORK_READY.forEach(([k,d])=>{ const on=sel.includes(k); const b=document.createElement("button"); b.className="opt"+(on?" on":"")+(!on&&sel.length>=5?" dis":""); b.innerHTML=`<span class="k">${on?"✓":""}</span><span>${k}<small>${d}</small></span>`; b.onclick=async()=>{ if(!on&&sel.length>=5){ showErr("That's five already – remove one first."); return; } const r=await cast("top5",k); if(!r) return; if(r.status==="added"&&!sel.includes(k)) sel.push(k); if(r.status==="removed") sel.splice(sel.indexOf(k),1); if(r.status==="limit") showErr("That's five already."); mine.top5=sel; saveMine(); render(); }; o.appendChild(b); });
   } else if(question==="decide"){
     view.innerHTML=`<div class="kicker">You decide</div><h1>Development need – or opportunity gap?</h1><p class="sub">Two patterns from the demo cohort. What would you do about each?</p><div id="groups"></div>`;
     const g=$("#groups");
@@ -107,19 +107,31 @@ function render(){
   }
 }
 
+// Rebuild this phone's selections from the server, so a host reset (or a stale tab) can't leave ghost ticks
+async function syncMine(){
+  if(!sb) return;
+  const {data,error}=await sb.from("votes").select("question,option").eq("device",dev);
+  if(error||!data) return;
+  const fresh={}; const t5=[];
+  data.forEach(v=>{ if(v.question==="top5"){ if(!t5.includes(v.option)) t5.push(v.option); } else fresh[v.question]=v.option; });
+  fresh.top5=t5;
+  const changed=JSON.stringify(fresh)!==JSON.stringify({warm:mine.warm,decide1:mine.decide1,decide2:mine.decide2,top5:mine.top5}.constructor===Object?Object.fromEntries(Object.entries(mine).filter(([k,v])=>v!==undefined)):mine);
+  Object.keys(mine).forEach(k=>delete mine[k]); Object.assign(mine,fresh); saveMine();
+  if(changed) render();
+}
 async function loadQuestion(){
   if(!sb) return;
   const {data,error}=await sb.from("session_state").select("question").eq("id","live").single();
-  if(!error&&data&&data.question!==question){ question=data.question; render(); }
+  if(!error&&data&&data.question!==question){ question=data.question; await syncMine(); render(); }
 }
 
 (async function boot(){
   render();
   if(!window.supabase){ setStatus(false,"offline"); showErr("Can't reach the voting service. Check your signal and reload."); return; }
   sb = window.supabase.createClient(LIVE.url, LIVE.key, { realtime:{ params:{ eventsPerSecond: 5 } } });
-  await loadQuestion(); setStatus(true,"live");
-  sb.channel("state").on("postgres_changes",{event:"UPDATE",schema:"public",table:"session_state"},p=>{ if(p.new&&p.new.question!==question){ question=p.new.question; render(); } }).subscribe(st=>{ setStatus(st==="SUBSCRIBED", st==="SUBSCRIBED"?"live":"reconnecting"); });
-  setInterval(loadQuestion, 6000); // belt and braces
+  await syncMine(); await loadQuestion(); render(); setStatus(true,"live");
+  sb.channel("state").on("postgres_changes",{event:"UPDATE",schema:"public",table:"session_state"},async p=>{ if(p.new&&p.new.question!==question){ question=p.new.question; await syncMine(); render(); } }).subscribe(st=>{ setStatus(st==="SUBSCRIBED", st==="SUBSCRIBED"?"live":"reconnecting"); });
+  setInterval(()=>{ loadQuestion(); if(question!=="idle"&&question!=="closed") syncMine(); }, 6000); // belt and braces
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden) loadQuestion(); });
 })();
 </script>
