@@ -646,7 +646,7 @@ const SECTIONS = [
     setTimeout(drawWarm,30); return el;
   }},
 { id:"eighty", label:"80 skills", steps:3,
-  notes:["Cappfinity taxonomy: 80 behavioural skills in five families, alongside cognitive and technical.","The 'Open the live Skills Library' button opens the dynamic library in a new tab (the SHARE link in the running order).","Click any tile to put its definition on screen; click a family to filter.","Build 1: the evidence. Build 2: Analysis – your worked example (selects it for you)."],
+  notes:["Cappfinity taxonomy: 80 behavioural skills in five families, alongside cognitive and technical.","Click any tile to put its definition on screen; click a family to filter.","Build 1: the evidence. Build 2: Analysis – your worked example (selects it for you)."],
   render(step){
     const el=h("div","eighty"); el.id="eightywrap"; setTimeout(()=>drawEighty(step),30); return el;
   },
@@ -717,11 +717,11 @@ function drawEighty(step){
   const el=$("#eightywrap"); if(!el) return; el.innerHTML="";
   const left=h("div","eleft");
   if(step===0){
-    if(S.skill) left.innerHTML=`<div class="kicker">The Cappfinity skills taxonomy</div><div class="bigrow"><span class="bignum" style="font-size:5.5rem">80</span><span>behavioural skills<br><small>in five families</small></span></div><a class="liblink" href="${LIBRARY_URL}" target="_blank" rel="noopener">Open the live Skills Library <span>↗</span></a>`;
+    if(S.skill) left.innerHTML=`<div class="kicker">The Cappfinity skills taxonomy</div><div class="bigrow"><span class="bignum" style="font-size:5.5rem">80</span><span>behavioural skills<br><small>in five families</small></span></div>`;
     else left.innerHTML=`<div class="kicker">The Cappfinity skills taxonomy</div><div class="bignum">80</div><h3 style="font-size:2.2rem;margin-top:.6rem">behavioural skills</h3>
       <div class="types"><span class="chip on">Behavioural · 80</span><span class="chip">Cognitive</span><span class="chip">Technical</span></div>
       <p class="lead" style="margin-top:1.6rem;max-width:34rem;font-size:1.3rem">Durable skills that give emerging talent a foundation for everything that comes after – which is why we hire for them first.</p>
-      <a class="liblink" href="${LIBRARY_URL}" target="_blank" rel="noopener">Open the live Skills Library <span>↗</span></a>`;
+      `;
   } else if(step===1){
     left.innerHTML=`<div class="kicker">A robust, scientific, externally audited taxonomy</div>`;
     const ev=h("div","evidence");
