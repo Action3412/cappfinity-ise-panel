@@ -83,6 +83,8 @@ h3{font-size:1.6rem;font-weight:600;letter-spacing:-.01em}
 .jarrow{width:3.5rem;height:2px;background:var(--g-full);position:relative;opacity:.8}
 .jarrow::after{content:"";position:absolute;right:-1px;top:-.3rem;border:.35rem solid transparent;border-left-color:var(--gold)}
 .arrive h1{font-size:4.3rem;line-height:1.06;max-width:52rem}
+.arrive h1.hero{font-size:6.6rem;line-height:.98;letter-spacing:-.035em;max-width:none;margin-left:-.04em}
+.arrive h1.hero em{display:block;width:max-content;font-style:normal;background:var(--g-full);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.06em}
 .arrive .sub{font-size:1.9rem;color:var(--ink2);margin-top:1.6rem;line-height:1.35;max-width:40rem}
 .arrive .meta{margin-top:3rem;display:flex;gap:1rem;align-items:center;font-size:1rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);font-weight:600}
 .arrive .meta i{width:3rem;height:2px;background:var(--g-full);display:block}
@@ -741,7 +743,7 @@ const SECTIONS = [
     const el=h("div","arrive");
     el.innerHTML=`<div>
       <div class="kicker g">Panel session</div>
-      <h1>There is no skills gap</h1>
+      <h1 class="hero">There is <em>no skills gap</em></h1>
       <div class="sub">What early talent data reveals about capability and opportunity.</div>
       <div class="meta"><i></i>45 minutes · interactive · bring your table's skills dictionary</div>
       <div class="tag"><em>Join in</em><b>#ISEsummit26</b></div>
