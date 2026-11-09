@@ -481,7 +481,7 @@ body.end .top,body.end .foot{opacity:0;transition:opacity .6s}
   <div id="hostctl"></div>
   <h4>Keys</h4>
   <div class="keys">
-    <kbd>→</kbd> / <kbd>Space</kbd> next build · <kbd>←</kbd> back · <kbd>PgDn</kbd>/<kbd>PgUp</kbd> next/prev section<br>
+    <kbd>→</kbd> / <kbd>Space</kbd> / <kbd>PgDn</kbd> (clicker) next build · <kbd>←</kbd> / <kbd>PgUp</kbd> back · <kbd>↓</kbd>/<kbd>↑</kbd> next/prev section<br>
     <kbd>1</kbd>–<kbd>4</kbd> add a vote on poll screens · <kbd>Backspace</kbd> undo last vote<br>
     <kbd>T</kbd> start/stop timer · <kbd>R</kbd> reset timer · <kbd>F</kbd> fullscreen · <kbd>Q</kbd> big QR code · <kbd>H</kbd> this panel
   </div>
@@ -996,11 +996,11 @@ document.addEventListener("keydown",e=>{
   if(e.target.tagName==="INPUT") return;
   const k=e.key; const sec=SECTIONS[S.i];
   if(k==="Escape"){ hideQR(); return; }
-  if($("#qroverlay")&&$("#qroverlay").classList.contains("on")){ if(k==="ArrowRight"||k===" "||k==="Enter"||k==="ArrowLeft"){ e.preventDefault(); hideQR(); return; } }
-  if(k==="ArrowRight"||k===" "||k==="Enter"){ e.preventDefault(); next(); }
-  else if(k==="ArrowLeft"){ e.preventDefault(); prev(); }
-  else if(k==="PageDown"||k==="ArrowDown"){ e.preventDefault(); go(S.i+1); }
-  else if(k==="PageUp"||k==="ArrowUp"){ e.preventDefault(); go(S.i-1); }
+  if($("#qroverlay")&&$("#qroverlay").classList.contains("on")){ if(k==="ArrowRight"||k===" "||k==="Enter"||k==="ArrowLeft"||k==="PageDown"||k==="PageUp"){ e.preventDefault(); hideQR(); return; } }
+  if(k==="ArrowRight"||k===" "||k==="Enter"||k==="PageDown"){ e.preventDefault(); next(); }   /* clicker "next" */
+  else if(k==="ArrowLeft"||k==="PageUp"||k==="Backspace"){ e.preventDefault(); prev(); }        /* clicker "back" */
+  else if(k==="ArrowDown"){ e.preventDefault(); go(S.i+1); }   /* whole section */
+  else if(k==="ArrowUp"){ e.preventDefault(); go(S.i-1); }
   else if(k==="Home"){ go(0); }
   else if(k.toLowerCase()==="h"){ $("#host").classList.toggle("open"); }
   else if(k.toLowerCase()==="f"){ fullscreen(); }
