@@ -179,6 +179,7 @@ h3{font-size:1.6rem;font-weight:600;letter-spacing:-.01em}
 .field i{display:block;aspect-ratio:1;border-radius:.55rem;background:#fff;border:1px solid var(--line);opacity:0;transform:scale(.6);animation:pop .5s var(--ease) forwards}
 .field i.hi{background:var(--g-full);border:0}
 @keyframes pop{to{opacity:1;transform:none}}
+body.livequiet #stage *{animation-duration:0s!important;animation-delay:0s!important}
 .evidence{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
 .ev{padding:1.2rem 1.4rem;background:#fff;border:1px solid var(--line);border-radius:1.2rem}
 .ev .big{font-size:2.4rem;font-weight:800;letter-spacing:-.03em;line-height:1;background:var(--g-full);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -1065,7 +1066,7 @@ function drawClose(step){
 let sb=null, countsTimer=null, lastQ=null;
 function questionFor(sec,step){ if(sec.id==="warm") return "warm"; if(sec.id==="top5"&&step===0) return "top5";  if(sec.id==="end") return "closed"; return "idle"; }
 async function syncQuestion(){ if(!sb) return; const q=questionFor(SECTIONS[S.i],S.step); if(q===lastQ) return; lastQ=q; try{ await sb.rpc("set_question",{q,secret:LIVE.secret}); }catch(e){} }
-async function fetchCounts(){ if(!sb) return; try{ const {data,error}=await sb.rpc("vote_counts"); if(error) throw error; const live={warm:{},top5:{},decide1:{},decide2:{}}; (data||[]).forEach(r=>{ if(live[r.question]) live[r.question][r.option]=+r.n; }); S.live=live; S.liveOn=true; redrawIfPoll(); setLiveBadge(true); }catch(e){ setLiveBadge(false); } }
+async function fetchCounts(){ if(!sb) return; try{ const {data,error}=await sb.rpc("vote_counts"); if(error) throw error; const live={warm:{},top5:{},decide1:{},decide2:{}}; (data||[]).forEach(r=>{ if(live[r.question]) live[r.question][r.option]=+r.n; }); const changed=JSON.stringify(live)!==JSON.stringify(S.live); S.live=live; S.liveOn=true; if(changed) redrawIfPoll(); setLiveBadge(true); }catch(e){ setLiveBadge(false); } }
 function scheduleCounts(){ clearTimeout(countsTimer); countsTimer=setTimeout(fetchCounts,150); }
 function redrawIfPoll(){ const id=SECTIONS[S.i].id; if(id==="warm"||id==="top5"||(id==="sd"&&S.step===6)||id==="data") redraw(); }
 function setLiveBadge(on){ const b=$("#livebadge"); if(!b) return; b.className="livebadge"+(on?" on":""); b.textContent=on?"Live voting on":"Live voting offline"; }
@@ -1087,6 +1088,7 @@ function hideQR(){ const o=$("#qroverlay"); if(o) o.classList.remove("on"); }
 const stage=$("#stage");
 let current=null;
 function go(i,step=0,dir=1,sync=true){
+  document.body.classList.remove("livequiet");
   i=Math.max(0,Math.min(SECTIONS.length-1,i));
   const sec=SECTIONS[i];
   step=Math.max(0,Math.min(sec.steps-1,step));
@@ -1133,7 +1135,7 @@ function drawHost(){
   c.querySelectorAll("input").forEach(inp=>inp.onchange=()=>{ const v=Math.max(0,parseInt(inp.value)||0); if(inp.dataset.poll==="warm") S.warm[+inp.dataset.i]=v; if(inp.dataset.poll==="decide") S.decide[+inp.dataset.p][+inp.dataset.i]=v; if(inp.dataset.poll==="top5") S.top5[inp.dataset.k]=v; redraw(); });
   c.querySelectorAll(".btn").forEach(b=>b.onclick=()=>{ const a=b.dataset.act; if(a==="resetwarm"){S.warm=[0,0,0,0];S.warmHist=[];} if(a==="resetdecide"){S.decide=[[0,0],[0,0]];S.decideHist=[[],[]];} if(a==="resetdial"){S.dial={p:null,e:null,u:null};} if(a==="resettop5"){for(const k in S.top5)S.top5[k]=0;S.top5Hist=[];} if(a==="timer")toggleTimer(); if(a==="rtimer")resetTimer(); if(a==="full")fullscreen(); if(a==="clearall"){S.warm=[0,0,0,0];S.decide=[[0,0],[0,0]];for(const k in S.top5)S.top5[k]=0;S.picks=[null,null,null];S.dial={p:null,e:null,u:null};} redraw(); });
 }
-function redraw(){ const sec=SECTIONS[S.i]; if(sec.id==="warm") drawWarm(); if(sec.id==="top5") drawTop5(S.step); if(sec.id==="sd") drawSD(S.step); if(sec.id==="data") drawData(S.step); if(sec.id==="close") drawClose(S.step); drawHost(); try{ localStorage.setItem("ise-state",JSON.stringify({i:S.i,step:S.step,warm:S.warm,top5:S.top5,decide:S.decide,picks:S.picks})); }catch(e){} }
+function redraw(){ document.body.classList.add("livequiet"); const sec=SECTIONS[S.i]; if(sec.id==="warm") drawWarm(); if(sec.id==="top5") drawTop5(S.step); if(sec.id==="sd") drawSD(S.step); if(sec.id==="data") drawData(S.step); if(sec.id==="close") drawClose(S.step); drawHost(); try{ localStorage.setItem("ise-state",JSON.stringify({i:S.i,step:S.step,warm:S.warm,top5:S.top5,decide:S.decide,picks:S.picks})); }catch(e){} }
 function fullscreen(){ const d=document.documentElement; if(!document.fullscreenElement) (d.requestFullscreen||d.webkitRequestFullscreen).call(d); else document.exitFullscreen(); }
 let flashId; function flash(t){ const f=$("#flash"); f.textContent=t; f.classList.add("on"); clearTimeout(flashId); flashId=setTimeout(()=>f.classList.remove("on"),900); }
 
